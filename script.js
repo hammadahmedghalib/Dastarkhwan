@@ -270,7 +270,7 @@ const menuData = [
 // ================================================================
 let cart = [];
 let selectedItemId = null; // for variant modal
-const WHATSAPP_NUMBER = '923199608782'; // CHANGE THIS
+
 
 // DOM refs
 const grid = document.getElementById('menuGrid');
@@ -517,61 +517,101 @@ checkoutModal.addEventListener('click', (e) => {
 });
 
 // ================================================================
-// PLACE ORDER (SUPABASE + WHATSAPP)
+// PLACE ORDER - SUPABASE DATABASE
 // ================================================================
-placeOrderBtn.addEventListener('click', async () => {  // <-- Added async
+placeOrderBtn.addEventListener('click', async () => {
+
     const name = document.getElementById('custName').value.trim();
     const phone = document.getElementById('custPhone').value.trim();
     const address = document.getElementById('custAddress').value.trim();
     const deliveryTime = document.getElementById('deliveryTime').value;
     const note = document.getElementById('orderNote').value.trim();
 
-    if (!name) { alert('Please enter your name.'); return; }
-    if (!phone) { alert('Please enter your WhatsApp number.'); return; }
-    if (!address) { alert('Please enter your delivery address.'); return; }
+    // Validation
+    if (!name) {
+        alert('Please enter your name.');
+        return;
+    }
 
-    // --- NEW: Save to Supabase Database ---
-    const orderData = {
-        customer_name: name,
-        customer_phone: phone,
-        items: JSON.stringify(cart), // Saves the whole cart as text
-        total_amount: getTotal() + 50, // Total + delivery
-        status: 'pending'
-    };
+    if (!phone) {
+        alert('Please enter your phone number.');
+        return;
+    }
+
+    if (!address) {
+        alert('Please enter your delivery address.');
+        return;
+    }
+
+    if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+    }
+
+    // Disable button while saving
+    placeOrderBtn.disabled = true;
+    placeOrderBtn.innerHTML = `
+        <i class="fas fa-spinner fa-spin"></i>
+        Placing Order...
+    `;
+
+    // Save order to Supabase
+const orderData = {
+    customer_name: name,
+    customer_phone: phone,
+    customer_location: address,
+    items: JSON.stringify(cart),
+    total_amount: getTotal() + 50,
+    status: 'pending'
+};
+
 
     const { error } = await supabase
         .from('orders')
         .insert([orderData]);
 
     if (error) {
+
         console.error('Database error:', error);
-        alert('Could not save your order. Please try again.');
+
+        alert(
+            'Could not place your order. Please try again.'
+        );
+
+        // Restore button
+        placeOrderBtn.disabled = false;
+        placeOrderBtn.innerHTML = `
+            <i class="fas fa-check"></i>
+            Place Order
+        `;
+
         return;
     }
-    // --- END NEW CODE ---
 
-    let orderLines = cart.map(item =>
-        `• ${item.name} (${item.variantLabel}) × ${item.qty} = Rs. ${item.price * item.qty}`
-    ).join('%0A');
-
-    const timeStr = deliveryTime ? `%0A🕒 Delivery Time: ${new Date(deliveryTime).toLocaleString()}` : '';
-    const noteStr = note ? `%0A📝 Special Requests: ${note}` : '';
-    const total = getTotal() + 50;
-
-    const message = `🍽️ *NEW ORDER - DASTARKHWAN 804*%0A%0A👤 *Name:* ${name}%0A📱 *Phone:* ${phone}%0A📍 *Address:* ${address}${timeStr}%0A%0A📋 *Order Details:*%0A${orderLines}%0A%0A💰 *Grand Total:* Rs. ${total} (incl. delivery)${noteStr}%0A%0A✅ Please confirm my order. Thank you!`;
-
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
-    window.open(url, '_blank');
-
+    // Order successfully saved
     cart = [];
     updateCartUI();
+
+    // Close checkout
     checkoutModal.classList.remove('active');
+
+    // Clear form
     document.getElementById('custName').value = '';
     document.getElementById('custPhone').value = '';
     document.getElementById('custAddress').value = '';
     document.getElementById('deliveryTime').value = '';
     document.getElementById('orderNote').value = '';
-    showToast('Order placed! 🎉');
+
+    // Restore button
+    placeOrderBtn.disabled = false;
+    placeOrderBtn.innerHTML = `
+        <i class="fas fa-check"></i>
+        Place Order
+    `;
+
+    // Success message
+    showToast('Order placed successfully! 🎉');
+
 });
 
 // ================================================================
