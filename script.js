@@ -1,4 +1,13 @@
 // ================================================================
+// SUPABASE SETUP
+// ================================================================
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+const supabaseUrl = "https://zghtapcdtldnfthfdfjw.supabase.co";
+const supabaseKey = 'sb_publishable_HB5cqP48gvhK9uxIyIVMUA_MT2B1CJN'
+const supabase = createClient(supabaseUrl, supabaseKey)
+
+// ================================================================
 // MENU DATA – all categories with variants
 // ================================================================
 const menuData = [
@@ -300,7 +309,7 @@ function renderMenu(category = 'all') {
     }
     grid.innerHTML = filtered.map(item => `
         <div class="menu-item" data-id="${item.id}">
-            <img src="${item.img}" alt="${item.name}" onerror="this.src='https://placehold.co/400x250/f0ebe3/b8860b?text=${item.name.slice(0,2)}'" />
+            <img src="${item.img}" alt="${item.name} at Dastarkhwan 804, Rawalpindi" onerror="this.src='https://placehold.co/400x250/f0ebe3/b8860b?text=${item.name.slice(0,2)}'" />
             <div class="item-header">
                 <span class="item-name">${item.name}</span>
             </div>
@@ -508,9 +517,9 @@ checkoutModal.addEventListener('click', (e) => {
 });
 
 // ================================================================
-// PLACE ORDER (WHATSAPP)
+// PLACE ORDER (SUPABASE + WHATSAPP)
 // ================================================================
-placeOrderBtn.addEventListener('click', () => {
+placeOrderBtn.addEventListener('click', async () => {  // <-- Added async
     const name = document.getElementById('custName').value.trim();
     const phone = document.getElementById('custPhone').value.trim();
     const address = document.getElementById('custAddress').value.trim();
@@ -520,6 +529,26 @@ placeOrderBtn.addEventListener('click', () => {
     if (!name) { alert('Please enter your name.'); return; }
     if (!phone) { alert('Please enter your WhatsApp number.'); return; }
     if (!address) { alert('Please enter your delivery address.'); return; }
+
+    // --- NEW: Save to Supabase Database ---
+    const orderData = {
+        customer_name: name,
+        customer_phone: phone,
+        items: JSON.stringify(cart), // Saves the whole cart as text
+        total_amount: getTotal() + 50, // Total + delivery
+        status: 'pending'
+    };
+
+    const { error } = await supabase
+        .from('orders')
+        .insert([orderData]);
+
+    if (error) {
+        console.error('Database error:', error);
+        alert('Could not save your order. Please try again.');
+        return;
+    }
+    // --- END NEW CODE ---
 
     let orderLines = cart.map(item =>
         `• ${item.name} (${item.variantLabel}) × ${item.qty} = Rs. ${item.price * item.qty}`
