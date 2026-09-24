@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Dastarkhwan 804 - Kitchen Panel</title>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    header {
+      background: #111;
+      color: white;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    #refreshBtn {
+      border: none;
+      background: white;
+      color: #111;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #refreshBtn:hover {
+      background: #ddd;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .order-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .order-card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+      border-left: 5px solid #ff9800;
+    }
+
+    .order-card h2 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .order-info {
+      margin: 8px 0;
+      line-height: 1.5;
+    }
+
+    .items {
+      background: #f7f7f7;
+      padding: 12px;
+      border-radius: 10px;
+      margin: 12px 0;
+    }
+
+    .item {
+      padding: 8px 0;
+      border-bottom: 1px solid #ddd;
+      line-height: 1.5;
+    }
+
+    .item:last-child {
+      border-bottom: none;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 20px;
+      background: #fff3cd;
+      color: #856404;
+      font-weight: bold;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    .complete-btn {
+      width: 100%;
+      border: none;
+      background: #198754;
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .complete-btn:hover {
+      background: #157347;
+    }
+
+    .complete-btn:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    .empty {
+      text-align: center;
+      background: white;
+      padding: 40px;
+      border-radius: 14px;
+      grid-column: 1 / -1;
+    }
+
+    .empty h3 {
+      margin-bottom: 8px;
+    }
+
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 10px;
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 600px) {
+
+      header {
+        padding: 15px;
+      }
+
+      header h1 {
+        font-size: 18px;
+      }
+
+      #refreshBtn {
+        padding: 9px 12px;
+        font-size: 13px;
+      }
+
+      .container {
+        padding: 15px;
+      }
+
+      .order-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .order-card {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+
+  <h1>🍳 Dastarkhwan 804 — Kitchen</h1>
+
+  <button id="refreshBtn">
+    🔄 Refresh Orders
+  </button>
+
+</header>
+
+
+<div class="container">
+
+  <h2>Pending Orders</h2>
+
+  <div id="orders" class="order-grid">
+
+    <div class="empty">
+      Loading orders...
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  // ============================================================
+  // SUPABASE SETUP
+  // ============================================================
+
+  const SUPABASE_URL =
+    "https://zghtapcdtldnfthfdfjw.supabase.co";
+
+
+  // Your Supabase PUBLISHABLE key
+  // Never use the secret key here.
+
+  const SUPABASE_ANON_KEY =
+    "sb_publishable_HB5cqP48gvhK9uxIyIVMUA_MT2B1CJN";
+
+
+  const supabaseClient =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+
+  // ============================================================
+  // LOAD PENDING ORDERS
+  // ============================================================
+
+  async function loadOrders() {
+
+    const container =
+      document.getElementById("orders");
+
+
+    container.innerHTML = `
+      <div class="empty">
+        Loading orders...
+      </div>
+    `;
+
+
+    try {
+
+      /*
+        IMPORTANT:
+
+        Kitchen only loads orders whose status
+        is "pending".
+
+        When the kitchen changes the order to
+        "completed", it will no longer be returned
+        by this query.
+      */
+
+      const { data, error } =
+        await supabaseClient
+          .from("orders")
+          .select("*")
+          .eq("status", "pending")
+          .order("created_at", {
+            ascending: true
+          });
+
+
+      if (error) {
+
+        console.error(
+          "SUPABASE ERROR:",
+          error
+        );
+
+
+        container.innerHTML = `
+          <div class="error">
+
+            <h3>Unable to load orders</h3>
+
+            <p>
+              ${escapeHTML(error.message)}
+            </p>
+
+          </div>
+        `;
+
+        return;
+      }
+
+
+      console.log(
+        "PENDING ORDERS:",
+        data
+      );
+
+
+      // ========================================================
+      // NO PENDING ORDERS
+      // ========================================================
+
+      if (!data || data.length === 0) {
+
+        container.innerHTML = `
+          <div class="empty">
+
+            <h3>🍽️ No Pending Orders</h3>
+
+            <p>
+              New customer orders will appear here.
+            </p>
+
+          </div>
+        `;
+
+        return;
+      }
+
+
+      // ========================================================
+      // CLEAR CONTAINER
+      // ========================================================
+
+      container.innerHTML = "";
+
+
+      // ========================================================
+      // DISPLAY ORDERS
+      // ========================================================
+
+      data.forEach(order => {
+
+        let itemsHTML = "";
+
+
+        // ======================================================
+        // PARSE ITEMS
+        // ======================================================
+
+        try {
+
+          const items =
+            typeof order.items === "string"
+              ? JSON.parse(order.items)
+              : order.items;
+
+
+          if (Array.isArray(items)) {
+
+            items.forEach(item => {
+
+              const itemName =
+                item.name ||
+                "Item";
+
+
+              const variant =
+                item.variant
+                  ? ` — ${item.variant}`
+                  : "";
+
+
+              const quantity =
+                item.quantity || 1;
+
+
+              const price =
+                item.price
+                  ? `<br>Rs. ${Number(item.price).toLocaleString()}`
+                  : "";
+
+
+              itemsHTML += `
+
+                <div class="item">
+
+                  <strong>
+                    ${escapeHTML(
+                      String(itemName)
+                    )}
+                  </strong>
+
+                  ${escapeHTML(
+                    String(variant)
+                  )}
+
+                  × ${quantity}
+
+                  ${price}
+
+                </div>
+
+              `;
+
+            });
+
+          } else {
+
+            itemsHTML = `
+              <div class="item">
+                ${escapeHTML(
+                  String(order.items || "No items")
+                )}
+              </div>
+            `;
+
+          }
+
+        } catch (e) {
+
+          itemsHTML = `
+
+            <div class="item">
+
+              ${escapeHTML(
+                String(order.items || "No items")
+              )}
+
+            </div>
+
+          `;
+
+        }
+
+
+        // ======================================================
+        // CREATE CARD
+        // ======================================================
+
+        const card =
+          document.createElement("div");
+
+
+        card.className =
+          "order-card";
+
+
+        card.innerHTML = `
+
+          <h2>
+            Order #${escapeHTML(
+              String(order.id || "N/A")
+            )}
+          </h2>
+
+
+          <span class="status">
+            ${escapeHTML(
+              String(order.status || "pending")
+            )}
+          </span>
+
+
+          <div class="order-info">
+
+            <strong>Customer:</strong>
+
+            ${escapeHTML(
+              String(
+                order.customer_name ||
+                "N/A"
+              )
+            )}
+
+          </div>
+
+
+          <div class="order-info">
+
+            <strong>Phone:</strong>
+
+            ${escapeHTML(
+              String(
+                order.customer_phone ||
+                "N/A"
+              )
+            )}
+
+          </div>
+
+
+          <div class="order-info">
+
+            <strong>Location:</strong>
+
+            ${escapeHTML(
+              String(
+                order.customer_location ||
+                "N/A"
+              )
+            )}
+
+          </div>
+
+
+          <div class="order-info">
+
+            <strong>Delivery:</strong>
+
+            ${escapeHTML(
+              String(
+                order.delivery_time ||
+                "ASAP"
+              )
+            )}
+
+          </div>
+
+
+          <div class="items">
+
+            <strong>🛒 Items</strong>
+
+            ${itemsHTML}
+
+          </div>
+
+
+          <div class="order-info">
+
+            <strong>Note:</strong>
+
+            ${escapeHTML(
+              String(
+                order.order_note ||
+                "No special instructions"
+              )
+            )}
+
+          </div>
+
+
+          <div class="order-info">
+
+            <strong>Total:</strong>
+
+            Rs.
+            ${Number(
+              order.total_amount || 0
+            ).toLocaleString()}
+
+          </div>
+
+
+          <button
+            class="complete-btn"
+            data-order-id="${escapeHTML(
+              String(order.id)
+            )}"
+          >
+            ✅ Mark as Completed
+          </button>
+
+        `;
+
+
+        // ======================================================
+        // BUTTON EVENT
+        // ======================================================
+
+        const completeButton =
+          card.querySelector(
+            ".complete-btn"
+          );
+
+
+        completeButton.addEventListener(
+          "click",
+          () => {
+
+            completeOrder(
+              order.id,
+              completeButton,
+              card
+            );
+
+          }
+        );
+
+
+        container.appendChild(card);
+
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+
+      container.innerHTML = `
+
+        <div class="error">
+
+          <h3>Unexpected Error</h3>
+
+          <p>
+            ${escapeHTML(
+              String(error.message)
+            )}
+          </p>
+
+        </div>
+
+      `;
+
+    }
+
+  }
+
+
+  // ============================================================
+  // COMPLETE ORDER
+  // ============================================================
+
+  async function completeOrder(
+    orderId,
+    button,
+    card
+  ) {
+
+
+
+
+    // Prevent double clicking
+
+    button.disabled = true;
+
+    button.innerText =
+      "Updating...";
+
+
+    try {
+
+      const { error } =
+        await supabaseClient
+          .from("orders")
+          .update({
+            status: "completed"
+          })
+          .eq("id", orderId);
+
+
+      // ========================================================
+      // UPDATE ERROR
+      // ========================================================
+
+      if (error) {
+
+        console.error(
+          "UPDATE ERROR:",
+          error
+        );
+
+
+        alert(
+          "Failed to update order:\n\n" +
+          error.message
+        );
+
+
+        button.disabled = false;
+
+        button.innerText =
+          "✅ Mark as Completed";
+
+        return;
+      }
+
+
+      // ========================================================
+      // SUCCESS
+      // ========================================================
+
+      alert(
+        "✅ Order marked as completed!"
+      );
+
+
+      /*
+        Remove the order immediately from the
+        Kitchen screen.
+
+        This means the order disappears even
+        before loadOrders() finishes.
+      */
+
+      if (card) {
+        card.remove();
+      }
+
+
+      /*
+        Check if there are no more orders.
+      */
+
+      const container =
+        document.getElementById(
+          "orders"
+        );
+
+
+      if (
+        container.children.length === 0
+      ) {
+
+        container.innerHTML = `
+
+          <div class="empty">
+
+            <h3>🍽️ No Pending Orders</h3>
+
+            <p>
+              New customer orders will appear here.
+            </p>
+
+          </div>
+
+        `;
+
+      }
+
+
+    } catch (error) {
+
+      console.error(error);
+
+
+      alert(
+        "Unexpected error:\n\n" +
+        error.message
+      );
+
+
+      button.disabled = false;
+
+      button.innerText =
+        "✅ Mark as Completed";
+
+    }
+
+  }
+
+
+  // ============================================================
+  // ESCAPE HTML
+  // ============================================================
+
+  function escapeHTML(value) {
+
+    return String(value)
+
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+
+      .replace(
+        /</g,
+        "&lt;"
+      )
+
+      .replace(
+        />/g,
+        "&gt;"
+      )
+
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
+  }
+
+
+  // ============================================================
+  // REFRESH BUTTON
+  // ============================================================
+
+  document
+    .getElementById("refreshBtn")
+    .addEventListener(
+      "click",
+      loadOrders
+    );
+
+
+  // ============================================================
+  // INITIAL LOAD
+  // ============================================================
+
+  loadOrders();
+
+
+  // ============================================================
+  // NO AUTOMATIC REFRESH
+  // ============================================================
+
+  /*
+    There is intentionally NO setInterval() here.
+
+    Kitchen staff can use the Refresh Orders button,
+    or later we can connect Supabase Realtime so
+    new orders appear automatically.
+  */
+
+</script>
+
+</body>
+</html>

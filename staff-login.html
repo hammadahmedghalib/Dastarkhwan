@@ -1,0 +1,639 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Staff Login - Dastarkhwan 804</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                linear-gradient(rgba(0,0,0,.72), rgba(0,0,0,.72)),
+                url("https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1600&q=80")
+                center/cover no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 430px;
+        }
+
+        .brand {
+            text-align: center;
+            color: white;
+            margin-bottom: 25px;
+        }
+
+        .brand-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 15px;
+            background: white;
+            color: #111;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.3);
+        }
+
+        .brand h1 {
+            font-size: 28px;
+            margin-bottom: 7px;
+        }
+
+        .brand p {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .login-card {
+            background: rgba(255,255,255,.97);
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.35);
+        }
+
+        .login-card h2 {
+            font-size: 23px;
+            color: #111;
+            margin-bottom: 7px;
+        }
+
+        .login-card .subtitle {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 7px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper span {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 17px;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 13px 13px 13px 43px;
+            border: 1px solid #ddd;
+            border-radius: 9px;
+            font-size: 14px;
+            outline: none;
+            background: #fafafa;
+            transition: .2s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #111;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0,0,0,.06);
+        }
+
+        .password-wrapper input {
+            padding-right: 45px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 17px;
+        }
+
+        .login-btn {
+            width: 100%;
+            border: none;
+            background: #111;
+            color: white;
+            padding: 14px;
+            border-radius: 9px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: .2s;
+            margin-top: 5px;
+        }
+
+        .login-btn:hover {
+            background: #292929;
+        }
+
+        .login-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            display: none;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .footer {
+            text-align: center;
+            color: #aaa;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: #555;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .back-link:hover {
+            color: #111;
+        }
+
+        @media (max-width: 500px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .login-card {
+                padding: 25px 20px;
+            }
+
+            .brand h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            🍽️
+        </div>
+
+        <h1>Dastarkhwan 804</h1>
+
+        <p>Restaurant Staff Portal</p>
+
+    </div>
+
+
+    <div class="login-card">
+
+        <h2>Welcome Back</h2>
+
+        <p class="subtitle">
+            Sign in to access your staff dashboard.
+        </p>
+
+
+        <div
+            id="errorMessage"
+            class="message error"
+        ></div>
+
+
+        <div
+            id="successMessage"
+            class="message success"
+        ></div>
+
+
+        <form id="loginForm">
+
+            <div class="field">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <div class="input-wrapper">
+
+                    <span>✉️</span>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <div class="input-wrapper password-wrapper">
+
+                    <span>🔒</span>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        id="togglePassword"
+                    >
+                        👁️
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="login-btn"
+                id="loginBtn"
+            >
+                Sign In
+            </button>
+
+        </form>
+
+
+        <a
+            href="index.html"
+            class="back-link"
+        >
+            ← Back to Restaurant Website
+        </a>
+
+    </div>
+
+
+    <div class="footer">
+        © 2026 Dastarkhwan 804 · Staff Portal
+    </div>
+
+</div>
+
+
+<script>
+
+    // ============================================================
+    // SUPABASE
+    // ============================================================
+
+    const SUPABASE_URL =
+        "https://zghtapcdtldnfthfdfjw.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+        "sb_publishable_HB5cqP48gvhK9uxIyIVMUA_MT2B1CJN";
+
+    const supabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+        );
+
+
+    // ============================================================
+    // ELEMENTS
+    // ============================================================
+
+    const loginForm =
+        document.getElementById("loginForm");
+
+    const emailInput =
+        document.getElementById("email");
+
+    const passwordInput =
+        document.getElementById("password");
+
+    const loginBtn =
+        document.getElementById("loginBtn");
+
+    const togglePassword =
+        document.getElementById("togglePassword");
+
+    const errorMessage =
+        document.getElementById("errorMessage");
+
+    const successMessage =
+        document.getElementById("successMessage");
+
+
+    // ============================================================
+    // SHOW MESSAGE
+    // ============================================================
+
+    function showError(message) {
+
+        errorMessage.innerText = message;
+
+        errorMessage.style.display = "block";
+
+        successMessage.style.display = "none";
+    }
+
+
+    function showSuccess(message) {
+
+        successMessage.innerText = message;
+
+        successMessage.style.display = "block";
+
+        errorMessage.style.display = "none";
+    }
+
+
+    // ============================================================
+    // PASSWORD SHOW / HIDE
+    // ============================================================
+
+    togglePassword.addEventListener(
+        "click",
+        function () {
+
+            if (
+                passwordInput.type === "password"
+            ) {
+
+                passwordInput.type = "text";
+
+                togglePassword.innerText = "🙈";
+
+            } else {
+
+                passwordInput.type = "password";
+
+                togglePassword.innerText = "👁️";
+            }
+        }
+    );
+
+
+    // ============================================================
+    // LOGIN
+    // ============================================================
+
+    loginForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+            errorMessage.style.display = "none";
+
+            successMessage.style.display = "none";
+
+            loginBtn.disabled = true;
+
+            loginBtn.innerText = "Signing In...";
+
+
+            const email =
+                emailInput.value.trim();
+
+            const password =
+                passwordInput.value;
+
+
+            try {
+
+                // ------------------------------------------------
+                // SIGN IN WITH SUPABASE AUTH
+                // ------------------------------------------------
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+
+                if (error) {
+
+                    showError(
+                        "Login failed: " +
+                        error.message
+                    );
+
+                    loginBtn.disabled = false;
+
+                    loginBtn.innerText = "Sign In";
+
+                    return;
+                }
+
+
+                if (!data.user) {
+
+                    showError(
+                        "Unable to sign in. Please try again."
+                    );
+
+                    loginBtn.disabled = false;
+
+                    loginBtn.innerText = "Sign In";
+
+                    return;
+                }
+
+
+                // ------------------------------------------------
+                // GET STAFF ROLE
+                // ------------------------------------------------
+
+                const {
+                    data: profile,
+                    error: profileError
+                } =
+                    await supabaseClient
+                        .from("staff_profiles")
+                        .select("full_name, role")
+                        .eq("id", data.user.id)
+                        .single();
+
+
+                if (profileError) {
+
+                    console.error(
+                        "Profile Error:",
+                        profileError
+                    );
+
+                    await supabaseClient.auth.signOut();
+
+                    showError(
+                        "Your account is not assigned to a staff role."
+                    );
+
+                    loginBtn.disabled = false;
+
+                    loginBtn.innerText = "Sign In";
+
+                    return;
+                }
+
+
+                if (!profile) {
+
+                    await supabaseClient.auth.signOut();
+
+                    showError(
+                        "Staff profile not found."
+                    );
+
+                    loginBtn.disabled = false;
+
+                    loginBtn.innerText = "Sign In";
+
+                    return;
+                }
+
+
+                // ------------------------------------------------
+                // ROLE
+                // ------------------------------------------------
+
+                const role =
+                    profile.role;
+
+
+                showSuccess(
+                    "Login successful. Opening dashboard..."
+                );
+
+
+                // ------------------------------------------------
+                // REDIRECT
+                // ------------------------------------------------
+
+                setTimeout(
+                    function () {
+
+                        if (role === "admin") {
+
+                            window.location.href =
+                                "admin.html";
+
+                        } else if (
+                            role === "kitchen"
+                        ) {
+
+                            window.location.href =
+                                "kitchen.html";
+
+                        } else if (
+                            role === "rider"
+                        ) {
+
+                            window.location.href =
+                                "rider.html";
+
+                        } else {
+
+                            supabaseClient.auth.signOut();
+
+                            showError(
+                                "Invalid staff role."
+                            );
+
+                            loginBtn.disabled = false;
+
+                            loginBtn.innerText =
+                                "Sign In";
+                        }
+
+                    },
+                    700
+                );
+
+            } catch (error) {
+
+                console.error(error);
+
+                showError(
+                    "Unexpected error: " +
+                    error.message
+                );
+
+                loginBtn.disabled = false;
+
+                loginBtn.innerText = "Sign In";
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
+

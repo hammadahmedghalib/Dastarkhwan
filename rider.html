@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dastarkhwan 804 - Rider Panel</title>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f5f7;
+            color: #222;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 23px;
+        }
+
+        header p {
+            color: #aaa;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .refresh-btn {
+            background: white;
+            color: #111;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 7px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .refresh-btn:hover {
+            background: #ddd;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .stat-card h3 {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-card p {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .controls {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .controls input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .controls input:focus {
+            border-color: #111;
+        }
+
+        #ordersContainer {
+            display: grid;
+            gap: 18px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        }
+
+        .order-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .order-number {
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .order-date {
+            color: #777;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .status {
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-out_for_delivery {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-delivered {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 13px;
+            border-radius: 8px;
+        }
+
+        .info-box strong {
+            display: block;
+            color: #777;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .info-box span {
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        .items-section {
+            margin-bottom: 18px;
+        }
+
+        .items-section h3 {
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        .item-left {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: bold;
+        }
+
+        .item-variant {
+            color: #777;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .item-right {
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .total-box {
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-box strong {
+            font-size: 18px;
+        }
+
+        .total-price {
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            border: none;
+            padding: 11px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .start-btn {
+            background: #111;
+            color: white;
+        }
+
+        .delivered-btn {
+            background: #198754;
+            color: white;
+        }
+
+        .call-btn {
+            background: #eee;
+            color: #111;
+        }
+
+        .map-btn {
+            background: #eee;
+            color: #111;
+        }
+
+        .action-btn:hover {
+            opacity: 0.82;
+        }
+
+        .empty {
+            background: white;
+            padding: 50px 20px;
+            text-align: center;
+            border-radius: 12px;
+            color: #777;
+        }
+
+        .empty h2 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+
+        .error {
+            display: none;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 15px;
+            }
+
+            header h1 {
+                font-size: 18px;
+            }
+
+            header p {
+                font-size: 11px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-card p {
+                font-size: 23px;
+            }
+
+            .order-card {
+                padding: 15px;
+            }
+
+            .order-top {
+                flex-direction: column;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div>
+        <h1>🚴 Dastarkhwan 804</h1>
+        <p>Rider Delivery Panel</p>
+    </div>
+
+    <button class="refresh-btn" onclick="loadOrders()">
+        🔄 Refresh
+    </button>
+
+</header>
+
+<div class="container">
+
+    <div class="stats">
+
+        <div class="stat-card">
+            <h3>Ready for Delivery</h3>
+            <p id="readyCount">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Out for Delivery</h3>
+            <p id="deliveryCount">0</p>
+        </div>
+
+    </div>
+
+    <div id="errorBox" class="error"></div>
+
+    <div class="controls">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search customer, phone or location..."
+            oninput="renderOrders"
+        >
+
+    </div>
+
+    <div id="ordersContainer">
+
+        <div class="loading">
+            Loading delivery orders...
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    // ============================================================
+    // SUPABASE SETUP
+    // ============================================================
+
+    const SUPABASE_URL =
+        "https://zghtapcdtldnfthfdfjw.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+        "sb_publishable_HB5cqP48gvhK9uxIyIVMUA_MT2B1CJN";
+
+    const supabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+        );
+
+
+    // ============================================================
+    // DATA
+    // ============================================================
+
+    let allOrders = [];
+
+
+    // ============================================================
+    // LOAD ORDERS
+    // ============================================================
+
+    async function loadOrders() {
+
+        const container =
+            document.getElementById("ordersContainer");
+
+        const errorBox =
+            document.getElementById("errorBox");
+
+        errorBox.style.display = "none";
+
+        container.innerHTML = `
+            <div class="loading">
+                Loading delivery orders...
+            </div>
+        `;
+
+        try {
+
+            const { data, error } =
+                await supabaseClient
+                    .from("orders")
+                    .select("*")
+                    .in("status", [
+                        "completed",
+                        "out_for_delivery"
+                    ])
+                    .order("created_at", {
+                        ascending: true
+                    });
+
+            if (error) {
+
+                console.error(
+                    "Supabase Error:",
+                    error
+                );
+
+                errorBox.innerText =
+                    "Unable to load orders: " +
+                    error.message;
+
+                errorBox.style.display = "block";
+
+                container.innerHTML = "";
+
+                return;
+            }
+
+            allOrders = data || [];
+
+            updateStats();
+
+            renderOrders();
+
+        } catch (error) {
+
+            console.error(error);
+
+            errorBox.innerText =
+                "Unexpected error: " +
+                error.message;
+
+            errorBox.style.display = "block";
+
+            container.innerHTML = "";
+        }
+    }
+
+
+    // ============================================================
+    // UPDATE STATS
+    // ============================================================
+
+    function updateStats() {
+
+        const ready =
+            allOrders.filter(
+                order =>
+                    order.status === "completed"
+            ).length;
+
+        const outForDelivery =
+            allOrders.filter(
+                order =>
+                    order.status === "out_for_delivery"
+            ).length;
+
+        document.getElementById(
+            "readyCount"
+        ).innerText = ready;
+
+        document.getElementById(
+            "deliveryCount"
+        ).innerText = outForDelivery;
+    }
+
+
+    // ============================================================
+    // RENDER ORDERS
+    // ============================================================
+
+    function renderOrders() {
+
+        const container =
+            document.getElementById(
+                "ordersContainer"
+            );
+
+        const search =
+            document.getElementById(
+                "searchInput"
+            )
+            .value
+            .toLowerCase()
+            .trim();
+
+        const filteredOrders =
+            allOrders.filter(order => {
+
+                if (!search) {
+                    return true;
+                }
+
+                const searchableText = [
+
+                    order.customer_name,
+                    order.customer_phone,
+                    order.customer_location,
+                    order.order_note,
+                    order.delivery_time,
+                    order.status
+
+                ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+                return searchableText.includes(
+                    search
+                );
+            });
+
+        if (filteredOrders.length === 0) {
+
+            container.innerHTML = `
+                <div class="empty">
+
+                    <h2>📦 No Delivery Orders</h2>
+
+                    <p>
+                        There are currently no orders
+                        ready for delivery.
+                    </p>
+
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML =
+            filteredOrders
+                .map(order =>
+                    createOrderCard(order)
+                )
+                .join("");
+    }
+
+
+    // ============================================================
+    // CREATE ORDER CARD
+    // ============================================================
+
+    function createOrderCard(order) {
+
+        const status =
+            order.status || "completed";
+
+        const statusClass =
+            "status-" +
+            status
+                .toLowerCase()
+                .replace(/ /g, "_");
+
+        const createdAt =
+            order.created_at
+                ? formatDate(order.created_at)
+                : "Unknown";
+
+        const customerName =
+            order.customer_name ||
+            "Customer";
+
+        const phone =
+            order.customer_phone ||
+            "Not provided";
+
+        const location =
+            order.customer_location ||
+            "Not provided";
+
+        const deliveryTime =
+            order.delivery_time ||
+            "Not specified";
+
+        const note =
+            order.order_note ||
+            "No special instructions";
+
+        const total =
+            Number(
+                order.total_amount || 0
+            );
+
+        const itemsHTML =
+            formatItems(order.items);
+
+        let actionHTML = "";
+
+        if (status === "completed") {
+
+            actionHTML = `
+
+                <button
+                    class="action-btn start-btn"
+                    onclick="startDelivery('${escapeAttribute(String(order.id))}')"
+                >
+                    🚴 Start Delivery
+                </button>
+
+            `;
+        }
+
+        if (status === "out_for_delivery") {
+
+            actionHTML = `
+
+                <button
+                    class="action-btn delivered-btn"
+                    onclick="markDelivered('${escapeAttribute(String(order.id))}')"
+                >
+                    ✅ Mark as Delivered
+                </button>
+
+            `;
+        }
+
+        return `
+
+            <div class="order-card">
+
+                <div class="order-top">
+
+                    <div>
+
+                        <div class="order-number">
+                            Order #${escapeHTML(
+                                String(order.id || "N/A")
+                            )}
+                        </div>
+
+                        <div class="order-date">
+                            ${escapeHTML(createdAt)}
+                        </div>
+
+                    </div>
+
+                    <span class="status ${statusClass}">
+                        ${escapeHTML(
+                            formatStatus(status)
+                        )}
+                    </span>
+
+                </div>
+
+                <div class="info-grid">
+
+                    <div class="info-box">
+                        <strong>Customer</strong>
+                        <span>
+                            ${escapeHTML(customerName)}
+                        </span>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Phone</strong>
+                        <span>
+                            ${escapeHTML(phone)}
+                        </span>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Delivery Location</strong>
+                        <span>
+                            ${escapeHTML(location)}
+                        </span>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Delivery Time</strong>
+                        <span>
+                            ${escapeHTML(deliveryTime)}
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="items-section">
+
+                    <h3>🛒 Ordered Items</h3>
+
+                    ${itemsHTML}
+
+                </div>
+
+                <div
+                    class="info-box"
+                    style="margin-bottom:18px;"
+                >
+
+                    <strong>Order Note</strong>
+
+                    <span>
+                        ${escapeHTML(note)}
+                    </span>
+
+                </div>
+
+                <div class="total-box">
+
+                    <strong>Total</strong>
+
+                    <span class="total-price">
+                        Rs. ${total.toLocaleString()}
+                    </span>
+
+                </div>
+
+                <div class="actions">
+
+                    ${actionHTML}
+
+                    <a
+                        class="action-btn call-btn"
+                        href="tel:${escapeAttribute(phone)}"
+                    >
+                        📞 Call Customer
+                    </a>
+
+                    <a
+                        class="action-btn map-btn"
+                        href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        📍 Open Location
+                    </a>
+
+                </div>
+
+            </div>
+
+        `;
+    }
+
+
+    // ============================================================
+    // START DELIVERY
+    // NO CONFIRMATION POPUP
+    // ============================================================
+
+    async function startDelivery(orderId) {
+
+        try {
+
+            const { error } =
+                await supabaseClient
+                    .from("orders")
+                    .update({
+                        status: "out_for_delivery"
+                    })
+                    .eq("id", orderId);
+
+            if (error) {
+
+                console.error(
+                    "Start Delivery Error:",
+                    error
+                );
+
+                alert(
+                    "Failed to start delivery:\n" +
+                    error.message
+                );
+
+                return;
+            }
+
+            alert(
+                "🚴 Delivery started!"
+            );
+
+            loadOrders();
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Unexpected error:\n" +
+                error.message
+            );
+        }
+    }
+
+
+    // ============================================================
+    // MARK DELIVERED
+    // NO CONFIRMATION POPUP
+    // ============================================================
+
+    async function markDelivered(orderId) {
+
+        try {
+
+            const { error } =
+                await supabaseClient
+                    .from("orders")
+                    .update({
+                        status: "delivered"
+                    })
+                    .eq("id", orderId);
+
+            if (error) {
+
+                console.error(
+                    "Delivered Error:",
+                    error
+                );
+
+                alert(
+                    "Failed to mark order as delivered:\n" +
+                    error.message
+                );
+
+                return;
+            }
+
+            alert(
+                "✅ Order marked as delivered!"
+            );
+
+            loadOrders();
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Unexpected error:\n" +
+                error.message
+            );
+        }
+    }
+
+
+    // ============================================================
+    // FORMAT ITEMS
+    // ============================================================
+
+    function formatItems(items) {
+
+        let parsedItems = items;
+
+        try {
+
+            if (typeof items === "string") {
+
+                parsedItems =
+                    JSON.parse(items);
+            }
+
+        } catch (error) {
+
+            return `
+                <div class="item">
+
+                    <div class="item-left">
+                        ${escapeHTML(
+                            String(
+                                items ||
+                                "No items"
+                            )
+                        )}
+                    </div>
+
+                </div>
+            `;
+        }
+
+        if (
+            !Array.isArray(parsedItems) ||
+            parsedItems.length === 0
+        ) {
+
+            return `
+                <div class="item">
+
+                    <div class="item-left">
+                        No item information
+                    </div>
+
+                </div>
+            `;
+        }
+
+        return parsedItems
+            .map(item => {
+
+                const name =
+                    item.name ||
+                    item.title ||
+                    "Item";
+
+                const variant =
+                    item.variant ||
+                    item.size ||
+                    "";
+
+                const quantity =
+                    Number(
+                        item.quantity || 1
+                    );
+
+                const price =
+                    Number(
+                        item.price || 0
+                    );
+
+                const itemTotal =
+                    price * quantity;
+
+                return `
+
+                    <div class="item">
+
+                        <div class="item-left">
+
+                            <div class="item-name">
+
+                                ${escapeHTML(
+                                    String(name)
+                                )}
+
+                                × ${quantity}
+
+                            </div>
+
+                            ${
+                                variant
+                                ? `
+                                    <div class="item-variant">
+                                        ${escapeHTML(
+                                            String(variant)
+                                        )}
+                                    </div>
+                                `
+                                : ""
+                            }
+
+                        </div>
+
+                        <div class="item-right">
+
+                            Rs.
+                            ${itemTotal.toLocaleString()}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+    }
+
+
+    // ============================================================
+    // FORMAT STATUS
+    // ============================================================
+
+    function formatStatus(status) {
+
+        if (!status) {
+            return "Completed";
+        }
+
+        return status
+            .replace(/_/g, " ")
+            .replace(
+                /\b\w/g,
+                letter =>
+                    letter.toUpperCase()
+            );
+    }
+
+
+    // ============================================================
+    // FORMAT DATE
+    // ============================================================
+
+    function formatDate(dateString) {
+
+        try {
+
+            const date =
+                new Date(dateString);
+
+            return date.toLocaleString(
+                "en-PK",
+                {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                }
+            );
+
+        } catch (error) {
+
+            return dateString;
+        }
+    }
+
+
+    // ============================================================
+    // SECURITY
+    // ============================================================
+
+    function escapeHTML(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function escapeAttribute(value) {
+
+        return String(value)
+            .replace(/'/g, "\\'")
+            .replace(/"/g, "&quot;");
+    }
+
+
+    // ============================================================
+    // INITIAL LOAD
+    // ============================================================
+
+    loadOrders();
+
+</script>
+
+</body>
+</html>

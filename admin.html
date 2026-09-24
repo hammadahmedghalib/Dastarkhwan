@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dastarkhwan 804 - Admin Panel</title>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f5f7;
+            color: #222;
+        }
+
+        /* HEADER */
+        header {
+            background: #111;
+            color: white;
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 23px;
+        }
+
+        header span {
+            color: #ccc;
+            font-size: 13px;
+        }
+
+        .refresh-btn {
+            border: none;
+            background: white;
+            color: #111;
+            padding: 10px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .refresh-btn:hover {
+            background: #ddd;
+        }
+
+        /* DASHBOARD */
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        /* CONTROLS */
+        .controls {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .controls input,
+        .controls select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .controls input {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .controls select {
+            min-width: 180px;
+        }
+
+        /* ORDERS */
+        #ordersContainer {
+            display: grid;
+            gap: 18px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            border-left: 5px solid #777;
+        }
+
+        .order-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .order-number {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .order-date {
+            color: #777;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        /* STATUS */
+        .status {
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-out_for_delivery {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-delivered {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* CUSTOMER */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 13px;
+            border-radius: 8px;
+        }
+
+        .info-box strong {
+            display: block;
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 5px;
+        }
+
+        .info-box span {
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        /* ITEMS */
+        .items-section {
+            margin-top: 10px;
+            margin-bottom: 18px;
+        }
+
+        .items-section h3 {
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        .item-left {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: bold;
+        }
+
+        .item-variant {
+            color: #777;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .item-right {
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* TOTAL */
+        .total-box {
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .total-box strong {
+            font-size: 18px;
+        }
+
+        .total-price {
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        /* ACTIONS */
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .actions select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .action-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .save-btn {
+            background: #111;
+            color: white;
+        }
+
+        .call-btn {
+            background: #eee;
+            color: #111;
+        }
+
+        .map-btn {
+            background: #eee;
+            color: #111;
+        }
+
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* EMPTY */
+        .empty {
+            background: white;
+            padding: 50px 20px;
+            border-radius: 12px;
+            text-align: center;
+            color: #777;
+        }
+
+        .empty h2 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        /* LOADING */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+
+        /* ERROR */
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 15px;
+            }
+
+            header h1 {
+                font-size: 18px;
+            }
+
+            header span {
+                display: none;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-card p {
+                font-size: 24px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .order-card {
+                padding: 15px;
+            }
+
+            .order-top {
+                flex-direction: column;
+            }
+
+            .status {
+                align-self: flex-start;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .actions select,
+            .action-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div>
+        <h1>🍽️ Dastarkhwan 804</h1>
+        <span>Admin Order Management Panel</span>
+    </div>
+
+    <button class="refresh-btn" onclick="loadOrders()">
+        🔄 Refresh
+    </button>
+</header>
+
+
+<div class="container">
+
+    <!-- STATS -->
+    <div class="stats">
+
+        <div class="stat-card">
+            <h3>Total Orders</h3>
+            <p id="totalOrders">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Pending</h3>
+            <p id="pendingOrders">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Completed</h3>
+            <p id="completedOrders">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Delivered</h3>
+            <p id="deliveredOrders">0</p>
+        </div>
+
+    </div>
+
+
+    <!-- ERROR -->
+    <div id="errorBox" class="error"></div>
+
+
+    <!-- FILTERS -->
+    <div class="controls">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search customer, phone or location..."
+            oninput="renderOrders()"
+        >
+
+        <select id="statusFilter" onchange="renderOrders()">
+            <option value="all">All Orders</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="out_for_delivery">Out for Delivery</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+        </select>
+
+    </div>
+
+
+    <!-- ORDERS -->
+    <div id="ordersContainer">
+        <div class="loading">
+            Loading orders...
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+
+    // ============================================================
+    // SUPABASE SETUP
+    // ============================================================
+
+    const SUPABASE_URL = "https://zghtapcdtldnfthfdfjw.supabase.co";
+
+    // IMPORTANT:
+    // Put your CURRENT Supabase Publishable Key here.
+    // It must start with sb_publishable_
+    //
+    // DO NOT put your Supabase secret key here.
+
+    const SUPABASE_ANON_KEY = "sb_publishable_HB5cqP48gvhK9uxIyIVMUA_MT2B1CJN";
+
+    const supabaseClient = supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+
+
+
+
+
+    // ============================================================
+// ADMIN AUTHENTICATION
+// ============================================================
+
+async function checkAdminAccess() {
+
+    const {
+        data: {
+            session
+        }
+    } = await supabaseClient.auth.getSession();
+
+
+    // No login
+    if (!session) {
+
+        window.location.href =
+            "staff-login.html";
+
+        return false;
+    }
+
+
+    // Get logged-in staff profile
+    const {
+        data: profile,
+        error
+    } = await supabaseClient
+        .from("staff_profiles")
+        .select("full_name, role")
+        .eq("id", session.user.id)
+        .single();
+
+
+    // Profile problem
+    if (error || !profile) {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+            "staff-login.html";
+
+        return false;
+    }
+
+
+    // Only ADMIN can access admin panel
+    if (profile.role !== "admin") {
+
+        alert(
+            "You do not have permission to access the Admin Panel."
+        );
+
+        window.location.href =
+            "staff-login.html";
+
+        return false;
+    }
+
+
+    return true;
+}
+
+
+// Check access immediately
+checkAdminAccess();
+
+
+
+
+
+
+
+    // ============================================================
+    // GLOBAL DATA
+    // ============================================================
+
+    let allOrders = [];
+
+
+    // ============================================================
+    // LOAD ORDERS
+    // ============================================================
+
+    async function loadOrders() {
+
+        const container = document.getElementById("ordersContainer");
+        const errorBox = document.getElementById("errorBox");
+
+        errorBox.style.display = "none";
+
+        container.innerHTML = `
+            <div class="loading">
+                Loading orders...
+            </div>
+        `;
+
+        try {
+
+            const { data, error } = await supabaseClient
+                .from("orders")
+                .select("*")
+                .order("created_at", {
+                    ascending: false
+                });
+
+            if (error) {
+
+                console.error("Supabase Error:", error);
+
+                errorBox.innerText =
+                    "Unable to load orders: " + error.message;
+
+                errorBox.style.display = "block";
+
+                container.innerHTML = "";
+
+                return;
+            }
+
+            allOrders = data || [];
+
+            updateStats();
+
+            renderOrders();
+
+        } catch (err) {
+
+            console.error(err);
+
+            errorBox.innerText =
+                "Unexpected error: " + err.message;
+
+            errorBox.style.display = "block";
+
+            container.innerHTML = "";
+        }
+    }
+
+
+    // ============================================================
+    // UPDATE STATISTICS
+    // ============================================================
+
+    function updateStats() {
+
+        const total = allOrders.length;
+
+        const pending = allOrders.filter(
+            order => order.status === "pending"
+        ).length;
+
+        const completed = allOrders.filter(
+            order => order.status === "completed"
+        ).length;
+
+        const delivered = allOrders.filter(
+            order => order.status === "delivered"
+        ).length;
+
+        document.getElementById("totalOrders").innerText = total;
+
+        document.getElementById("pendingOrders").innerText = pending;
+
+        document.getElementById("completedOrders").innerText = completed;
+
+        document.getElementById("deliveredOrders").innerText = delivered;
+    }
+
+
+    // ============================================================
+    // RENDER ORDERS
+    // ============================================================
+
+    function renderOrders() {
+
+        const container =
+            document.getElementById("ordersContainer");
+
+        const search =
+            document.getElementById("searchInput")
+                .value
+                .toLowerCase()
+                .trim();
+
+        const statusFilter =
+            document.getElementById("statusFilter").value;
+
+
+        let filteredOrders = allOrders.filter(order => {
+
+            // STATUS FILTER
+
+            if (
+                statusFilter !== "all" &&
+                order.status !== statusFilter
+            ) {
+                return false;
+            }
+
+
+            // SEARCH FILTER
+
+            if (search) {
+
+                const searchableText = [
+
+                    order.customer_name,
+
+                    order.customer_phone,
+
+                    order.customer_location,
+
+                    order.order_note,
+
+                    order.delivery_time,
+
+                    order.status
+
+                ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+                if (!searchableText.includes(search)) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+
+        if (filteredOrders.length === 0) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    <h2>📦 No Orders Found</h2>
+                    <p>
+                        There are no orders matching your current filter.
+                    </p>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML = filteredOrders
+            .map(order => createOrderCard(order))
+            .join("");
+    }
+
+
+    // ============================================================
+    // CREATE ORDER CARD
+    // ============================================================
+
+    function createOrderCard(order) {
+
+        const status =
+            order.status || "pending";
+
+        const statusClass =
+            "status-" +
+            status.toLowerCase().replace(/ /g, "_");
+
+
+        const createdAt =
+            order.created_at
+                ? formatDate(order.created_at)
+                : "Unknown";
+
+
+        const itemsHTML =
+            formatItems(order.items);
+
+
+        const total =
+            Number(order.total_amount || 0);
+
+
+        const phone =
+            order.customer_phone || "Not provided";
+
+
+        const location =
+            order.customer_location || "Not provided";
+
+
+        const deliveryTime =
+            order.delivery_time || "Not specified";
+
+
+        const note =
+            order.order_note || "No special instructions";
+
+
+        return `
+
+            <div class="order-card">
+
+                <!-- ORDER HEADER -->
+
+                <div class="order-top">
+
+                    <div>
+
+                        <div class="order-number">
+                            Order #${escapeHTML(String(order.id || "N/A"))}
+                        </div>
+
+                        <div class="order-date">
+                            ${escapeHTML(createdAt)}
+                        </div>
+
+                    </div>
+
+                    <span class="status ${statusClass}">
+                        ${escapeHTML(formatStatus(status))}
+                    </span>
+
+                </div>
+
+
+                <!-- CUSTOMER INFORMATION -->
+
+                <div class="info-grid">
+
+                    <div class="info-box">
+
+                        <strong>Customer</strong>
+
+                        <span>
+                            ${escapeHTML(
+                                order.customer_name || "Not provided"
+                            )}
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <strong>Phone</strong>
+
+                        <span>
+                            ${escapeHTML(phone)}
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <strong>Location</strong>
+
+                        <span>
+                            ${escapeHTML(location)}
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <strong>Delivery Time</strong>
+
+                        <span>
+                            ${escapeHTML(deliveryTime)}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ITEMS -->
+
+                <div class="items-section">
+
+                    <h3>🛒 Ordered Items</h3>
+
+                    ${itemsHTML}
+
+                </div>
+
+
+                <!-- NOTE -->
+
+                <div class="info-box" style="margin-bottom:18px;">
+
+                    <strong>Order Note</strong>
+
+                    <span>
+                        ${escapeHTML(note)}
+                    </span>
+
+                </div>
+
+
+                <!-- TOTAL -->
+
+                <div class="total-box">
+
+                    <strong>Total</strong>
+
+                    <span class="total-price">
+                        Rs. ${total.toLocaleString()}
+                    </span>
+
+                </div>
+
+
+                <!-- ACTIONS -->
+
+                <div class="actions">
+
+                    <select
+                        id="status-${order.id}"
+                    >
+
+                        <option
+                            value="pending"
+                            ${status === "pending" ? "selected" : ""}
+                        >
+                            Pending
+                        </option>
+
+                        <option
+                            value="completed"
+                            ${status === "completed" ? "selected" : ""}
+                        >
+                            Completed
+                        </option>
+
+                        <option
+                            value="out_for_delivery"
+                            ${status === "out_for_delivery" ? "selected" : ""}
+                        >
+                            Out for Delivery
+                        </option>
+
+                        <option
+                            value="delivered"
+                            ${status === "delivered" ? "selected" : ""}
+                        >
+                            Delivered
+                        </option>
+
+                        <option
+                            value="cancelled"
+                            ${status === "cancelled" ? "selected" : ""}
+                        >
+                            Cancelled
+                        </option>
+
+                    </select>
+
+
+                    <button
+                        class="action-btn save-btn"
+                        onclick="changeStatus('${escapeAttribute(String(order.id))}')"
+                    >
+                        💾 Update Status
+                    </button>
+
+
+                    <a
+                        class="action-btn call-btn"
+                        href="tel:${escapeAttribute(phone)}"
+                    >
+                        📞 Call
+                    </a>
+
+
+                    <a
+                        class="action-btn map-btn"
+                        href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}"
+                        target="_blank"
+                    >
+                        📍 Map
+                    </a>
+
+                </div>
+
+            </div>
+
+        `;
+    }
+
+
+    // ============================================================
+    // FORMAT ITEMS
+    // ============================================================
+
+    function formatItems(items) {
+
+        let parsedItems = items;
+
+        try {
+
+            if (typeof items === "string") {
+                parsedItems = JSON.parse(items);
+            }
+
+        } catch (error) {
+
+            return `
+                <div class="item">
+                    <div class="item-left">
+                        ${escapeHTML(String(items || "No items"))}
+                    </div>
+                </div>
+            `;
+        }
+
+
+        if (!Array.isArray(parsedItems) || parsedItems.length === 0) {
+
+            return `
+                <div class="item">
+                    <div class="item-left">
+                        No item information
+                    </div>
+                </div>
+            `;
+        }
+
+
+        return parsedItems.map(item => {
+
+            const name =
+                item.name ||
+                item.title ||
+                "Item";
+
+            const variant =
+                item.variant ||
+                item.size ||
+                "";
+
+            const quantity =
+                Number(item.quantity || 1);
+
+            const price =
+                Number(item.price || 0);
+
+            const itemTotal =
+                price * quantity;
+
+
+            return `
+
+                <div class="item">
+
+                    <div class="item-left">
+
+                        <div class="item-name">
+                            ${escapeHTML(String(name))}
+                            × ${quantity}
+                        </div>
+
+                        ${
+                            variant
+                            ? `
+                                <div class="item-variant">
+                                    ${escapeHTML(String(variant))}
+                                </div>
+                            `
+                            : ""
+                        }
+
+                    </div>
+
+
+                    <div class="item-right">
+                        Rs. ${itemTotal.toLocaleString()}
+                    </div>
+
+                </div>
+
+            `;
+
+        }).join("");
+    }
+
+
+    // ============================================================
+    // CHANGE STATUS
+    // ============================================================
+
+    async function changeStatus(orderId) {
+
+        const select =
+            document.getElementById(
+                "status-" + orderId
+            );
+
+        if (!select) {
+            alert("Status selector not found.");
+            return;
+        }
+
+
+        const newStatus =
+            select.value;
+
+
+        const confirmChange =
+            confirm(
+                "Change this order status to " +
+                formatStatus(newStatus) +
+                "?"
+            );
+
+
+        if (!confirmChange) {
+            return;
+        }
+
+
+        try {
+
+            const { error } =
+                await supabaseClient
+                    .from("orders")
+                    .update({
+                        status: newStatus
+                    })
+                    .eq("id", orderId);
+
+
+            if (error) {
+
+                console.error(
+                    "Status Update Error:",
+                    error
+                );
+
+                alert(
+                    "Failed to update status:\n" +
+                    error.message
+                );
+
+                return;
+            }
+
+
+            // Update local data immediately
+
+            const order =
+                allOrders.find(
+                    item =>
+                        String(item.id) ===
+                        String(orderId)
+                );
+
+
+            if (order) {
+                order.status = newStatus;
+            }
+
+
+            updateStats();
+
+            renderOrders();
+
+
+            alert(
+                "Order status updated to " +
+                formatStatus(newStatus)
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Unexpected error:\n" +
+                error.message
+            );
+        }
+    }
+
+
+    // ============================================================
+    // FORMAT STATUS
+    // ============================================================
+
+    function formatStatus(status) {
+
+        if (!status) {
+            return "Pending";
+        }
+
+        return status
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, letter =>
+                letter.toUpperCase()
+            );
+    }
+
+
+    // ============================================================
+    // FORMAT DATE
+    // ============================================================
+
+    function formatDate(dateString) {
+
+        try {
+
+            const date =
+                new Date(dateString);
+
+            return date.toLocaleString(
+                "en-PK",
+                {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                }
+            );
+
+        } catch (error) {
+
+            return dateString;
+        }
+    }
+
+
+    // ============================================================
+    // SECURITY HELPERS
+    // ============================================================
+
+    function escapeHTML(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function escapeAttribute(value) {
+
+        return String(value)
+            .replace(/'/g, "\\'")
+            .replace(/"/g, "&quot;");
+    }
+
+
+    // ============================================================
+    // INITIAL LOAD
+    // ============================================================
+
+    loadOrders();
+
+
+    // ============================================================
+    // AUTO REFRESH
+    // ============================================================
+
+    
+
+        loadOrders();
+
+
+</script>
+
+</body>
+</html>
