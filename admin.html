@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Dastarkhwan 804 - Admin Panel</title>
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
     <style>
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -20,9 +26,9 @@
             font-family: Arial, Helvetica, sans-serif;
             background: #f4f5f7;
             color: #222;
+            min-height: 100vh;
         }
 
-        /* HEADER */
         header {
             background: #111;
             color: white;
@@ -38,11 +44,18 @@
 
         header h1 {
             font-size: 23px;
+            margin-bottom: 4px;
         }
 
         header span {
             color: #ccc;
             font-size: 13px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .refresh-btn {
@@ -59,16 +72,190 @@
             background: #ddd;
         }
 
-        /* DASHBOARD */
         .container {
             max-width: 1400px;
             margin: auto;
             padding: 25px;
         }
 
-        .stats {
+        .section-heading {
+            margin-bottom: 15px;
+        }
+
+        .section-heading h2 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .section-heading p {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .sales-controls {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .sales-controls label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .sales-controls select,
+        .sales-controls input {
+            padding: 11px 12px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            font-size: 14px;
+            outline: none;
+            background: white;
+        }
+
+        .sales-definition {
+            width: 100%;
+            margin-top: 2px;
+            color: #777;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .custom-date {
+            display: none;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .custom-date.show {
+            display: flex;
+        }
+
+        .apply-date-btn {
+            border: none;
+            background: #111;
+            color: white;
+            padding: 11px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .sales-stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .sales-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            border-top: 4px solid #111;
+        }
+
+        .sales-card h3 {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        .sales-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #111;
+        }
+
+        .sales-card .sub {
+            margin-top: 7px;
+            color: #777;
+            font-size: 12px;
+        }
+
+        .data-note {
+            background: #fff8e1;
+            color: #6d5200;
+            border: 1px solid #f0d98a;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .period-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .period-box {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .period-box h4 {
+            color: #777;
+            font-size: 12px;
+            margin-bottom: 7px;
+            text-transform: uppercase;
+        }
+
+        .period-box strong {
+            font-size: 21px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .period-box span {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            min-height: 350px;
+        }
+
+        .chart-card h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 280px;
+            width: 100%;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
             gap: 15px;
             margin-bottom: 25px;
         }
@@ -91,7 +278,15 @@
             font-weight: bold;
         }
 
-        /* CONTROLS */
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
         .controls {
             background: white;
             padding: 18px;
@@ -100,6 +295,7 @@
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .controls input,
@@ -120,7 +316,6 @@
             min-width: 180px;
         }
 
-        /* ORDERS */
         #ordersContainer {
             display: grid;
             gap: 18px;
@@ -153,7 +348,6 @@
             margin-top: 5px;
         }
 
-        /* STATUS */
         .status {
             padding: 7px 12px;
             border-radius: 20px;
@@ -188,7 +382,6 @@
             color: #721c24;
         }
 
-        /* CUSTOMER */
         .info-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -214,7 +407,6 @@
             word-break: break-word;
         }
 
-        /* ITEMS */
         .items-section {
             margin-top: 10px;
             margin-bottom: 18px;
@@ -255,7 +447,6 @@
             white-space: nowrap;
         }
 
-        /* TOTAL */
         .total-box {
             border-top: 1px solid #ddd;
             padding-top: 15px;
@@ -274,7 +465,6 @@
             font-weight: bold;
         }
 
-        /* ACTIONS */
         .actions {
             display: flex;
             gap: 10px;
@@ -287,6 +477,7 @@
             border-radius: 7px;
             flex: 1;
             min-width: 180px;
+            background: white;
         }
 
         .action-btn {
@@ -295,6 +486,10 @@
             border-radius: 7px;
             cursor: pointer;
             font-weight: bold;
+            text-decoration: none;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .save-btn {
@@ -302,11 +497,12 @@
             color: white;
         }
 
-        .call-btn {
-            background: #eee;
-            color: #111;
+        .save-btn:disabled {
+            opacity: 0.6;
+            cursor: wait;
         }
 
+        .call-btn,
         .map-btn {
             background: #eee;
             color: #111;
@@ -316,7 +512,6 @@
             opacity: 0.8;
         }
 
-        /* EMPTY */
         .empty {
             background: white;
             padding: 50px 20px;
@@ -330,31 +525,37 @@
             margin-bottom: 8px;
         }
 
-        /* LOADING */
         .loading {
             text-align: center;
             padding: 40px;
             color: #777;
         }
 
-        /* ERROR */
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
+        .dashboard-footer {
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+            padding: 30px 0 10px;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 900px) {
-            .stats {
+        @media (max-width: 1100px) {
+
+            .sales-stats {
                 grid-template-columns: repeat(2, 1fr);
             }
+
+            .stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
+
             header {
                 padding: 15px;
             }
@@ -369,6 +570,23 @@
 
             .container {
                 padding: 15px;
+            }
+
+            .sales-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .sales-card {
+                padding: 15px;
+            }
+
+            .sales-card .value {
+                font-size: 22px;
+            }
+
+            .period-summary {
+                grid-template-columns: 1fr;
             }
 
             .stats {
@@ -408,27 +626,370 @@
             .action-btn {
                 width: 100%;
             }
+
+            .sales-controls {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .sales-controls select,
+            .sales-controls input,
+            .apply-date-btn {
+                width: 100%;
+            }
+
+            .custom-date {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .chart-card {
+                min-height: 320px;
+                padding: 15px;
+            }
+
+            .chart-wrapper {
+                height: 250px;
+            }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
+
 <header>
+
     <div>
-        <h1>🍽️ Dastarkhwan 804</h1>
-        <span>Admin Order Management Panel</span>
+
+        <h1>
+            🍽️ Dastarkhwan 804
+        </h1>
+
+        <span>
+            Admin Order & Sales Management Panel
+        </span>
+
     </div>
 
-    <button class="refresh-btn" onclick="loadOrders()">
-        🔄 Refresh
-    </button>
+    <div class="header-actions">
+
+        <button
+            class="refresh-btn"
+            onclick="loadOrders()"
+        >
+            🔄 Refresh
+        </button>
+
+    </div>
+
 </header>
+
 
 
 <div class="container">
 
-    <!-- STATS -->
+
+    <!-- SALES -->
+
+    <div class="section-heading">
+
+        <h2>
+            📊 Sales & Analytics
+        </h2>
+
+        <p>
+            Track total orders separately from successful sales for the selected time period.
+        </p>
+
+    </div>
+
+
+    <div class="sales-controls">
+
+        <label for="salesPeriod">
+            Sales Period:
+        </label>
+
+        <select
+            id="salesPeriod"
+            onchange="handleSalesPeriodChange()"
+        >
+
+            <option value="today">
+                Today
+            </option>
+
+            <option value="yesterday">
+                Yesterday
+            </option>
+
+            <option value="week">
+                This Week
+            </option>
+
+            <option value="month">
+                This Month
+            </option>
+
+            <option value="year">
+                This Year
+            </option>
+
+            <option value="all">
+                All Time
+            </option>
+
+            <option value="custom">
+                Custom Date Range
+            </option>
+
+        </select>
+
+
+        <div
+            id="customDate"
+            class="custom-date"
+        >
+
+            <input
+                type="date"
+                id="startDate"
+            >
+
+            <span>
+                to
+            </span>
+
+            <input
+                type="date"
+                id="endDate"
+            >
+
+            <button
+                class="apply-date-btn"
+                onclick="applyCustomDate()"
+            >
+                Apply
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="sales-stats">
+
+
+        <div class="sales-card">
+
+            <h3>
+                Sales
+            </h3>
+
+            <div
+                class="value"
+                id="periodSales"
+            >
+                Rs. 0
+            </div>
+
+            <div
+                class="sub"
+                id="periodLabel"
+            >
+                Today
+            </div>
+
+        </div>
+
+
+        <div class="sales-card">
+
+            <h3>
+                Orders
+            </h3>
+
+            <div
+                class="value"
+                id="periodOrders"
+            >
+                0
+            </div>
+
+            <div
+                class="sub"
+                id="successfulOrdersLabel"
+            >
+                0 successful orders
+            </div>
+
+        </div>
+
+
+        <div class="sales-card">
+
+            <h3>
+                Average Order
+            </h3>
+
+            <div
+                class="value"
+                id="averageOrder"
+            >
+                Rs. 0
+            </div>
+
+            <div class="sub">
+                Average revenue per successful order
+            </div>
+
+        </div>
+
+
+        <div class="sales-card">
+
+            <h3>
+                Cancelled
+            </h3>
+
+            <div
+                class="value"
+                id="cancelledPeriod"
+            >
+                0
+            </div>
+
+            <div
+                class="sub"
+                id="cancelledValue"
+            >
+                Rs. 0 cancelled value
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="periodDataNote" class="data-note" style="display:none;"></div>
+
+
+    <!-- QUICK SUMMARY -->
+
+    <div class="period-summary">
+
+
+        <div class="period-box">
+
+            <h4>
+                Today
+            </h4>
+
+            <strong id="todaySales">
+                Rs. 0
+            </strong>
+
+            <span id="todayOrders">
+                0 orders
+            </span>
+
+        </div>
+
+
+        <div class="period-box">
+
+            <h4>
+                This Week
+            </h4>
+
+            <strong id="weekSales">
+                Rs. 0
+            </strong>
+
+            <span id="weekOrders">
+                0 orders
+            </span>
+
+        </div>
+
+
+        <div class="period-box">
+
+            <h4>
+                This Month
+            </h4>
+
+            <strong id="monthSales">
+                Rs. 0
+            </strong>
+
+            <span id="monthOrders">
+                0 orders
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- CHARTS -->
+
+    <div class="overview-grid">
+
+
+        <div class="chart-card">
+
+            <h3>
+                📈 Sales by Day
+            </h3>
+
+            <div class="chart-wrapper">
+
+                <canvas id="salesChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="chart-card">
+
+            <h3>
+                📊 Orders by Day
+            </h3>
+
+            <div class="chart-wrapper">
+
+                <canvas id="ordersChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="errorBox"
+        class="error"
+    ></div>
+
+
+    <!-- ORDER OVERVIEW -->
+
+    <div class="section-heading">
+
+        <h2>
+            📦 Order Overview
+        </h2>
+
+    </div>
+
+
     <div class="stats">
 
         <div class="stat-card">
@@ -447,18 +1008,25 @@
         </div>
 
         <div class="stat-card">
+            <h3>Out for Delivery</h3>
+            <p id="outForDeliveryOrders">0</p>
+        </div>
+
+        <div class="stat-card">
             <h3>Delivered</h3>
             <p id="deliveredOrders">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Cancelled</h3>
+            <p id="cancelledOrders">0</p>
         </div>
 
     </div>
 
 
-    <!-- ERROR -->
-    <div id="errorBox" class="error"></div>
+    <!-- SEARCH -->
 
-
-    <!-- FILTERS -->
     <div class="controls">
 
         <input
@@ -468,289 +1036,1836 @@
             oninput="renderOrders()"
         >
 
-        <select id="statusFilter" onchange="renderOrders()">
-            <option value="all">All Orders</option>
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="out_for_delivery">Out for Delivery</option>
-            <option value="delivered">Delivered</option>
-            <option value="cancelled">Cancelled</option>
+        <select
+            id="statusFilter"
+            onchange="renderOrders()"
+        >
+
+            <option value="all">
+                All Orders
+            </option>
+
+            <option value="pending">
+                Pending
+            </option>
+
+            <option value="completed">
+                Completed
+            </option>
+
+            <option value="out_for_delivery">
+                Out for Delivery
+            </option>
+
+            <option value="delivered">
+                Delivered
+            </option>
+
+            <option value="cancelled">
+                Cancelled
+            </option>
+
         </select>
 
     </div>
 
 
     <!-- ORDERS -->
+
     <div id="ordersContainer">
+
         <div class="loading">
             Loading orders...
         </div>
+
+    </div>
+
+
+    <div class="dashboard-footer">
+
+        Dastarkhwan 804 Admin Dashboard
+
     </div>
 
 </div>
 
 
+
 <script>
 
     // ============================================================
-    // SUPABASE SETUP
+    // DASTARKHwan 804 ADMIN PANEL
     // ============================================================
 
-    const SUPABASE_URL = "https://zghtapcdtldnfthfdfjw.supabase.co";
+    const SUPABASE_URL =
+        "https://zghtapcdtldnfthfdfjw.supabase.co";
 
-    // IMPORTANT:
-    // Put your CURRENT Supabase Publishable Key here.
-    // It must start with sb_publishable_
-    //
-    // DO NOT put your Supabase secret key here.
+    const SUPABASE_ANON_KEY =
+        "sb_publishable_HB5cqP48gvhK9uxIyIVMUA_MT2B1CJN";
 
-    const SUPABASE_ANON_KEY = "sb_publishable_HB5cqP48gvhK9uxIyIVMUA_MT2B1CJN";
+    const APP_TIME_ZONE = "Asia/Karachi";
+    const PK_OFFSET_MINUTES = 5 * 60;
 
-    const supabaseClient = supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-    );
-
-
-
-
-
-
-    // ============================================================
-// ADMIN AUTHENTICATION
-// ============================================================
-
-async function checkAdminAccess() {
-
-    const {
-        data: {
-            session
-        }
-    } = await supabaseClient.auth.getSession();
-
-
-    // No login
-    if (!session) {
-
-        window.location.href =
-            "staff-login.html";
-
-        return false;
-    }
-
-
-    // Get logged-in staff profile
-    const {
-        data: profile,
-        error
-    } = await supabaseClient
-        .from("staff_profiles")
-        .select("full_name, role")
-        .eq("id", session.user.id)
-        .single();
-
-
-    // Profile problem
-    if (error || !profile) {
-
-        await supabaseClient.auth.signOut();
-
-        window.location.href =
-            "staff-login.html";
-
-        return false;
-    }
-
-
-    // Only ADMIN can access admin panel
-    if (profile.role !== "admin") {
-
-        alert(
-            "You do not have permission to access the Admin Panel."
+    const supabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
         );
 
-        window.location.href =
-            "staff-login.html";
+    // Orders in these statuses contribute to sales/revenue.
+    const SALES_STATUSES = [
+        "completed",
+        "delivered"
+    ];
 
-        return false;
+    let allOrders = [];
+    let salesChart = null;
+    let ordersChart = null;
+    let customDateRange = null;
+    let isLoadingOrders = false;
+    let isUpdatingStatus = false;
+
+
+    // ============================================================
+    // BASIC HELPERS
+    // ============================================================
+
+    function normalizeStatus(status) {
+        return String(status || "")
+            .trim()
+            .toLowerCase()
+            .replace(/-/g, "_");
+    }
+
+    function formatMoney(amount) {
+        const value = Number(amount);
+
+        return (
+            "Rs. " +
+            (Number.isFinite(value) ? value : 0)
+                .toLocaleString("en-PK")
+        );
+    }
+
+    function parseNumber(value) {
+        if (value === null || value === undefined || value === "") {
+            return 0;
+        }
+
+        if (typeof value === "number") {
+            return Number.isFinite(value) ? value : 0;
+        }
+
+        const cleaned =
+            String(value)
+                .replace(/,/g, "")
+                .replace(/[^0-9.-]/g, "");
+
+        const number = Number(cleaned);
+
+        return Number.isFinite(number) ? number : 0;
+    }
+
+    function getOrderTotal(order) {
+        return parseNumber(
+            order?.total_amount
+        );
+    }
+
+    function escapeHTML(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function escapeAttribute(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
+
+    function formatStatus(status) {
+        const normalized = normalizeStatus(status) || "pending";
+
+        return normalized
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, letter =>
+                letter.toUpperCase()
+            );
     }
 
 
-    return true;
-}
+    // ============================================================
+    // ORDER NUMBER
+    // ============================================================
 
+    /*
+     * The database primary key can be a UUID, while the restaurant
+     * may have a separate sequential Order No.
+     *
+     * We support common order-number column names automatically.
+     * If none exists, numeric id is used. If id is not numeric,
+     * created_at is used only as a sorting fallback.
+     */
 
-// Check access immediately
-checkAdminAccess();
+    const ORDER_NUMBER_FIELDS = [
+        "order_no",
+        "order_number",
+        "orderNo",
+        "orderNumber",
+        "serial_no",
+        "serial_number"
+    ];
 
+    function getOrderNumber(order) {
+        for (const field of ORDER_NUMBER_FIELDS) {
+            const value = order?.[field];
 
+            if (
+                value !== null &&
+                value !== undefined &&
+                String(value).trim() !== ""
+            ) {
+                return value;
+            }
+        }
 
+        if (
+            order?.id !== null &&
+            order?.id !== undefined &&
+            String(order.id).trim() !== ""
+        ) {
+            return order.id;
+        }
 
+        return "N/A";
+    }
 
+    function isNumericOrderNumber(value) {
+        if (value === null || value === undefined) {
+            return false;
+        }
+
+        const text =
+            String(value)
+                .trim();
+
+        return (
+            text !== "" &&
+            /^-?\d+(\.\d+)?$/.test(text)
+        );
+    }
+
+    function compareOrderNumbers(a, b) {
+        const aNo = getOrderNumber(a);
+        const bNo = getOrderNumber(b);
+
+        const aNumeric =
+            isNumericOrderNumber(aNo);
+
+        const bNumeric =
+            isNumericOrderNumber(bNo);
+
+        if (aNumeric && bNumeric) {
+            const difference =
+                Number(bNo) - Number(aNo);
+
+            if (difference !== 0) {
+                return difference;
+            }
+        }
+
+        /*
+         * If the displayed Order No. is not numeric and we do not have
+         * a dedicated sequential number, use creation time as the
+         * chronological fallback instead of UUID/text ordering.
+         */
+
+        const aDate =
+            getOrderDate(a);
+
+        const bDate =
+            getOrderDate(b);
+
+        if (aDate && bDate) {
+            const difference =
+                bDate.getTime() -
+                aDate.getTime();
+
+            if (difference !== 0) {
+                return difference;
+            }
+        }
+
+        return String(bNo)
+            .localeCompare(
+                String(aNo),
+                undefined,
+                {
+                    numeric: true,
+                    sensitivity: "base"
+                }
+            );
+    }
 
 
     // ============================================================
-    // GLOBAL DATA
+    // PAKISTAN TIME / DATE HELPERS
     // ============================================================
 
-    let allOrders = [];
+    /*
+     * All sales periods are based on Pakistan local calendar dates,
+     * regardless of the browser's own timezone.
+     *
+     * Pakistan uses UTC+05:00.
+     */
+
+    function getPakistanParts(date = new Date()) {
+        const parts =
+            new Intl.DateTimeFormat(
+                "en-GB",
+                {
+                    timeZone: APP_TIME_ZONE,
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hourCycle: "h23"
+                }
+            ).formatToParts(date);
+
+        const values = {};
+
+        for (const part of parts) {
+            if (part.type !== "literal") {
+                values[part.type] =
+                    Number(part.value);
+            }
+        }
+
+        return values;
+    }
+
+    function pakistanLocalToUTC(
+        year,
+        month,
+        day,
+        hour = 0,
+        minute = 0,
+        second = 0,
+        millisecond = 0
+    ) {
+        return new Date(
+            Date.UTC(
+                year,
+                month - 1,
+                day,
+                hour,
+                minute,
+                second,
+                millisecond
+            ) -
+            PK_OFFSET_MINUTES * 60 * 1000
+        );
+    }
+
+    function addPakistanDays(date, days) {
+        const parts =
+            getPakistanParts(date);
+
+        const calendarDate =
+            new Date(
+                Date.UTC(
+                    parts.year,
+                    parts.month - 1,
+                    parts.day + days
+                )
+            );
+
+        return pakistanLocalToUTC(
+            calendarDate.getUTCFullYear(),
+            calendarDate.getUTCMonth() + 1,
+            calendarDate.getUTCDate()
+        );
+    }
+
+    function startOfPakistanDay(date = new Date()) {
+        const parts =
+            getPakistanParts(date);
+
+        return pakistanLocalToUTC(
+            parts.year,
+            parts.month,
+            parts.day
+        );
+    }
+
+    function endOfPakistanDay(date = new Date()) {
+        return new Date(
+            addPakistanDays(
+                startOfPakistanDay(date),
+                1
+            ).getTime() - 1
+        );
+    }
+
+    function startOfPakistanWeek(date = new Date()) {
+        const parts =
+            getPakistanParts(date);
+
+        const weekday =
+            new Date(
+                Date.UTC(
+                    parts.year,
+                    parts.month - 1,
+                    parts.day
+                )
+            ).getUTCDay();
+
+        const daysSinceMonday =
+            weekday === 0
+                ? 6
+                : weekday - 1;
+
+        return addPakistanDays(
+            startOfPakistanDay(date),
+            -daysSinceMonday
+        );
+    }
+
+    function startOfPakistanMonth(date = new Date()) {
+        const parts =
+            getPakistanParts(date);
+
+        return pakistanLocalToUTC(
+            parts.year,
+            parts.month,
+            1
+        );
+    }
+
+    function startOfPakistanYear(date = new Date()) {
+        const parts =
+            getPakistanParts(date);
+
+        return pakistanLocalToUTC(
+            parts.year,
+            1,
+            1
+        );
+    }
+
+    function pakistanDateStringToStart(dateString) {
+        const parts =
+            String(dateString || "")
+                .split("-")
+                .map(Number);
+
+        if (
+            parts.length !== 3 ||
+            parts.some(value => !Number.isFinite(value))
+        ) {
+            return null;
+        }
+
+        return pakistanLocalToUTC(
+            parts[0],
+            parts[1],
+            parts[2]
+        );
+    }
+
+    function dateKey(date) {
+        const parts =
+            getPakistanParts(date);
+
+        return (
+            String(parts.year) +
+            "-" +
+            String(parts.month).padStart(2, "0") +
+            "-" +
+            String(parts.day).padStart(2, "0")
+        );
+    }
+
+    function monthKey(date) {
+        const parts =
+            getPakistanParts(date);
+
+        return (
+            String(parts.year) +
+            "-" +
+            String(parts.month).padStart(2, "0")
+        );
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) {
+            return "Unknown";
+        }
+
+        const date =
+            new Date(dateString);
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+            return String(dateString);
+        }
+
+        return date.toLocaleString(
+            "en-PK",
+            {
+                timeZone: APP_TIME_ZONE,
+                dateStyle: "medium",
+                timeStyle: "short"
+            }
+        );
+    }
+
+    function getOrderDate(order) {
+        /*
+         * Use the primary created_at column first, then common fallback
+         * names in case an existing schema uses a different timestamp field.
+         */
+        const candidateFields = [
+            "created_at",
+            "order_created_at",
+            "order_date",
+            "createdAt",
+            "timestamp",
+            "createdDate"
+        ];
+
+        for (const field of candidateFields) {
+            const raw =
+                order?.[field];
+
+            if (
+                raw === null ||
+                raw === undefined ||
+                String(raw).trim() === ""
+            ) {
+                continue;
+            }
+
+            const date =
+                new Date(raw);
+
+            if (!Number.isNaN(date.getTime())) {
+                return date;
+            }
+        }
+
+        return null;
+    }
+
+    function getCancelledDate(order) {
+        const candidateFields = [
+            "cancelled_at",
+            "canceled_at",
+            "cancelledAt",
+            "canceledAt"
+        ];
+
+        for (const field of candidateFields) {
+            const raw =
+                order?.[field];
+
+            if (
+                raw === null ||
+                raw === undefined ||
+                String(raw).trim() === ""
+            ) {
+                continue;
+            }
+
+            const date =
+                new Date(raw);
+
+            if (!Number.isNaN(date.getTime())) {
+                return date;
+            }
+        }
+
+        return getOrderDate(order);
+    }
+
+
+    // ============================================================
+    // SALES / PERIOD LOGIC
+    // ============================================================
+
+    function isSalesOrder(order) {
+        return SALES_STATUSES.includes(
+            normalizeStatus(
+                order?.status
+            )
+        );
+    }
+
+    function getPeriodRange() {
+        const now = new Date();
+
+        const period =
+            document.getElementById(
+                "salesPeriod"
+            ).value;
+
+        if (period === "today") {
+            return {
+                start:
+                    startOfPakistanDay(now),
+                end:
+                    endOfPakistanDay(now)
+            };
+        }
+
+        if (period === "yesterday") {
+            const todayStart =
+                startOfPakistanDay(now);
+
+            const yesterdayStart =
+                addPakistanDays(
+                    todayStart,
+                    -1
+                );
+
+            return {
+                start: yesterdayStart,
+                end:
+                    new Date(
+                        todayStart.getTime() - 1
+                    )
+            };
+        }
+
+        if (period === "week") {
+            return {
+                start:
+                    startOfPakistanWeek(now),
+                end:
+                    endOfPakistanDay(now)
+            };
+        }
+
+        if (period === "month") {
+            return {
+                start:
+                    startOfPakistanMonth(now),
+                end:
+                    endOfPakistanDay(now)
+            };
+        }
+
+        if (period === "year") {
+            return {
+                start:
+                    startOfPakistanYear(now),
+                end:
+                    endOfPakistanDay(now)
+            };
+        }
+
+        if (period === "custom") {
+            if (!customDateRange) {
+                return null;
+            }
+
+            const start =
+                pakistanDateStringToStart(
+                    customDateRange.start
+                );
+
+            const endStart =
+                pakistanDateStringToStart(
+                    customDateRange.end
+                );
+
+            if (!start || !endStart) {
+                return null;
+            }
+
+            return {
+                start,
+                end:
+                    new Date(
+                        addPakistanDays(
+                            endStart,
+                            1
+                        ).getTime() - 1
+                    )
+            };
+        }
+
+        // All Time
+        return {
+            start: null,
+            end: null
+        };
+    }
+
+    function isDateInRange(
+        date,
+        range
+    ) {
+        if (!date) {
+            return false;
+        }
+
+        if (
+            range.start &&
+            date < range.start
+        ) {
+            return false;
+        }
+
+        if (
+            range.end &&
+            date > range.end
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function getOrdersForPeriod() {
+        const range =
+            getPeriodRange();
+
+        if (!range) {
+            return [];
+        }
+
+        return allOrders.filter(order =>
+            isDateInRange(
+                getOrderDate(order),
+                range
+            )
+        );
+    }
+
+    function getUndatedOrders() {
+        return allOrders.filter(
+            order =>
+                !getOrderDate(order)
+        );
+    }
+
+    function getUndatedCountForCurrentDataSet() {
+        return getUndatedOrders().length;
+    }
+
+
+    // ============================================================
+    // ADMIN ACCESS
+    // ============================================================
+
+    async function checkAdminAccess() {
+        try {
+            const {
+                data: {
+                    session
+                },
+                error: sessionError
+            } =
+                await supabaseClient.auth.getSession();
+
+            if (
+                sessionError ||
+                !session
+            ) {
+                window.location.href =
+                    "staff-login.html";
+                return false;
+            }
+
+            const {
+                data: profile,
+                error
+            } =
+                await supabaseClient
+                    .from("staff_profiles")
+                    .select("full_name, role")
+                    .eq(
+                        "id",
+                        session.user.id
+                    )
+                    .single();
+
+            if (
+                error ||
+                !profile
+            ) {
+                await supabaseClient.auth.signOut();
+                window.location.href =
+                    "staff-login.html";
+                return false;
+            }
+
+            if (
+                normalizeStatus(profile.role) !==
+                "admin"
+            ) {
+                alert(
+                    "You do not have permission to access the Admin Panel."
+                );
+
+                window.location.href =
+                    "staff-login.html";
+
+                return false;
+            }
+
+            return true;
+
+        } catch (error) {
+            console.error(
+                "Admin access error:",
+                error
+            );
+
+            window.location.href =
+                "staff-login.html";
+
+            return false;
+        }
+    }
 
 
     // ============================================================
     // LOAD ORDERS
     // ============================================================
 
-    async function loadOrders() {
+    async function loadOrders(
+        options = {}
+    ) {
+        const {
+            silent = false
+        } = options;
 
-        const container = document.getElementById("ordersContainer");
-        const errorBox = document.getElementById("errorBox");
+        if (isLoadingOrders) {
+            return;
+        }
 
-        errorBox.style.display = "none";
+        if (isUpdatingStatus) {
+            return;
+        }
 
-        container.innerHTML = `
-            <div class="loading">
-                Loading orders...
-            </div>
-        `;
+        isLoadingOrders = true;
+
+        const container =
+            document.getElementById(
+                "ordersContainer"
+            );
+
+        const errorBox =
+            document.getElementById(
+                "errorBox"
+            );
+
+        errorBox.style.display =
+            "none";
+
+        if (!silent) {
+            container.innerHTML = `
+                <div class="loading">
+                    Loading orders...
+                </div>
+            `;
+        }
 
         try {
-
-            const { data, error } = await supabaseClient
-                .from("orders")
-                .select("*")
-                .order("created_at", {
-                    ascending: false
-                });
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("orders")
+                    .select("*")
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
 
             if (error) {
-
-                console.error("Supabase Error:", error);
-
-                errorBox.innerText =
-                    "Unable to load orders: " + error.message;
-
-                errorBox.style.display = "block";
-
-                container.innerHTML = "";
-
-                return;
+                throw error;
             }
 
-            allOrders = data || [];
+            allOrders =
+                Array.isArray(data)
+                    ? data
+                    : [];
+
+            /*
+             * The visible list is ALWAYS sorted by restaurant
+             * Order No. when such a field exists.
+             */
+            allOrders.sort(
+                compareOrderNumbers
+            );
 
             updateStats();
-
+            updateSalesDashboard();
             renderOrders();
 
-        } catch (err) {
-
-            console.error(err);
+        } catch (error) {
+            console.error(
+                "Load orders error:",
+                error
+            );
 
             errorBox.innerText =
-                "Unexpected error: " + err.message;
+                "Unable to load orders: " +
+                (error?.message || "Unknown error");
 
-            errorBox.style.display = "block";
+            errorBox.style.display =
+                "block";
 
-            container.innerHTML = "";
+            if (!silent) {
+                container.innerHTML = "";
+            }
+
+        } finally {
+            isLoadingOrders = false;
         }
     }
 
 
     // ============================================================
-    // UPDATE STATISTICS
+    // BASIC ORDER STATS
     // ============================================================
 
+    function countStatus(status) {
+        const target =
+            normalizeStatus(status);
+
+        return allOrders.filter(
+            order =>
+                normalizeStatus(
+                    order.status
+                ) === target
+        ).length;
+    }
+
+    function getTotalOrderCountForPeriod(
+        start,
+        end
+    ) {
+        return allOrders.filter(order => {
+            const date =
+                getOrderDate(order);
+
+            return (
+                date &&
+                date >= start &&
+                date <= end
+            );
+        }).length;
+    }
+
     function updateStats() {
+        document.getElementById(
+            "totalOrders"
+        ).innerText =
+            allOrders.length;
 
-        const total = allOrders.length;
+        document.getElementById(
+            "pendingOrders"
+        ).innerText =
+            countStatus("pending");
 
-        const pending = allOrders.filter(
-            order => order.status === "pending"
-        ).length;
+        document.getElementById(
+            "completedOrders"
+        ).innerText =
+            countStatus("completed");
 
-        const completed = allOrders.filter(
-            order => order.status === "completed"
-        ).length;
+        document.getElementById(
+            "outForDeliveryOrders"
+        ).innerText =
+            countStatus("out_for_delivery");
 
-        const delivered = allOrders.filter(
-            order => order.status === "delivered"
-        ).length;
+        document.getElementById(
+            "deliveredOrders"
+        ).innerText =
+            countStatus("delivered");
 
-        document.getElementById("totalOrders").innerText = total;
-
-        document.getElementById("pendingOrders").innerText = pending;
-
-        document.getElementById("completedOrders").innerText = completed;
-
-        document.getElementById("deliveredOrders").innerText = delivered;
+        document.getElementById(
+            "cancelledOrders"
+        ).innerText =
+            countStatus("cancelled");
     }
 
 
     // ============================================================
-    // RENDER ORDERS
+    // SALES DASHBOARD
+    // ============================================================
+
+    function updateSalesDashboard() {
+        updateSelectedPeriod();
+        updateQuickSummary();
+        updateCharts();
+    }
+
+    function updateSelectedPeriod() {
+        const range =
+            getPeriodRange();
+
+        if (!range) {
+            return;
+        }
+
+        /*
+         * IMPORTANT:
+         * periodOrders = ALL orders created inside the selected date range.
+         * successfulOrders = ONLY completed + delivered orders in that range.
+         *
+         * This keeps the dashboard honest:
+         * Example: 30 total orders, 16 successful orders.
+         */
+        const periodOrders =
+            getOrdersForPeriod();
+
+        const successfulOrders =
+            periodOrders.filter(
+                isSalesOrder
+            );
+
+        const cancelledOrders =
+            periodOrders.filter(
+                order =>
+                    normalizeStatus(
+                        order.status
+                    ) === "cancelled"
+            );
+
+        const sales =
+            successfulOrders.reduce(
+                (sum, order) =>
+                    sum +
+                    getOrderTotal(order),
+                0
+            );
+
+        const cancelledValue =
+            cancelledOrders.reduce(
+                (sum, order) =>
+                    sum +
+                    getOrderTotal(order),
+                0
+            );
+
+        const averageOrder =
+            successfulOrders.length
+                ? sales /
+                  successfulOrders.length
+                : 0;
+
+        document.getElementById(
+            "periodSales"
+        ).innerText =
+            formatMoney(sales);
+
+        /*
+         * The main Orders number is the complete database order count.
+         * Successful Orders underneath it is the successful count for
+         * the selected dated period.
+         *
+         * This is important for your existing data because Orders #1-14
+         * have no created_at value. They still exist as real orders and
+         * must remain part of the overall order total.
+         */
+        document.getElementById(
+            "periodOrders"
+        ).innerText =
+            allOrders.length;
+
+        document.getElementById(
+            "successfulOrdersLabel"
+        ).innerText =
+            successfulOrders.length +
+            (
+                successfulOrders.length === 1
+                    ? " successful order in selected period"
+                    : " successful orders in selected period"
+            );
+
+        document.getElementById(
+            "averageOrder"
+        ).innerText =
+            formatMoney(
+                averageOrder
+            );
+
+        document.getElementById(
+            "cancelledPeriod"
+        ).innerText =
+            cancelledOrders.length;
+
+        document.getElementById(
+            "cancelledValue"
+        ).innerText =
+            formatMoney(
+                cancelledValue
+            ) +
+            " cancelled value";
+
+        document.getElementById(
+            "periodLabel"
+        ).innerText =
+            getPeriodLabel();
+
+        updatePeriodDataNote(
+            periodOrders
+        );
+    }
+
+    function updatePeriodDataNote(
+        periodOrders
+    ) {
+        const note =
+            document.getElementById(
+                "periodDataNote"
+            );
+
+        if (!note) {
+            return;
+        }
+
+        const undatedCount =
+            getUndatedCountForCurrentDataSet();
+
+        if (undatedCount === 0) {
+            note.style.display = "none";
+            note.innerText = "";
+            return;
+        }
+
+        const periodName =
+            getPeriodLabel();
+
+        note.innerHTML = `
+            ⚠️ <strong>${undatedCount}</strong>
+            order${undatedCount === 1 ? "" : "s"} in the database
+            have no <strong>created_at</strong> date.
+            The main <strong>Orders</strong> card includes every database order,
+            while <strong>Sales</strong>, <strong>Successful Orders</strong> and
+            <strong>Cancelled</strong> use only orders that can be assigned to
+            <strong>${escapeHTML(periodName)}</strong>.
+        `;
+
+        note.style.display = "block";
+    }
+
+
+    function getPeriodLabel() {
+        const period =
+            document.getElementById(
+                "salesPeriod"
+            ).value;
+
+        const labels = {
+            today: "Today",
+            yesterday: "Yesterday",
+            week: "This Week",
+            month: "This Month",
+            year: "This Year",
+            all: "All Time"
+        };
+
+        if (period === "custom") {
+            return customDateRange
+                ? (
+                    customDateRange.start +
+                    " → " +
+                    customDateRange.end
+                )
+                : "Custom Range";
+        }
+
+        return labels[period] || "All Time";
+    }
+
+
+    // ============================================================
+    // QUICK SUMMARY
+    // ============================================================
+
+    function getOrdersBetween(
+        start,
+        end
+    ) {
+        return allOrders.filter(order => {
+            const date =
+                getOrderDate(order);
+
+            return (
+                date &&
+                date >= start &&
+                date <= end
+            );
+        });
+    }
+
+    function updateQuickSummary() {
+        const now =
+            new Date();
+
+        const todayStart =
+            startOfPakistanDay(now);
+
+        const todayEnd =
+            endOfPakistanDay(now);
+
+        const todayOrders =
+            getOrdersBetween(
+                todayStart,
+                todayEnd
+            );
+
+        const todaySuccessfulOrders =
+            todayOrders.filter(isSalesOrder);
+
+        const todaySales =
+            todaySuccessfulOrders.reduce(
+                (sum, order) =>
+                    sum +
+                    getOrderTotal(order),
+                0
+            );
+
+        document.getElementById(
+            "todaySales"
+        ).innerText =
+            formatMoney(todaySales);
+
+        document.getElementById(
+            "todayOrders"
+        ).innerText =
+            todayOrders.length +
+            (
+                todayOrders.length === 1
+                    ? " order"
+                    : " orders"
+            );
+
+        const weekStart =
+            startOfPakistanWeek(now);
+
+        const weekEnd =
+            endOfPakistanDay(now);
+
+        const weekOrders =
+            getOrdersBetween(
+                weekStart,
+                weekEnd
+            );
+
+        const weekSuccessfulOrders =
+            weekOrders.filter(isSalesOrder);
+
+        const weekSales =
+            weekSuccessfulOrders.reduce(
+                (sum, order) =>
+                    sum +
+                    getOrderTotal(order),
+                0
+            );
+
+        document.getElementById(
+            "weekSales"
+        ).innerText =
+            formatMoney(weekSales);
+
+        document.getElementById(
+            "weekOrders"
+        ).innerText =
+            weekOrders.length +
+            (
+                weekOrders.length === 1
+                    ? " order"
+                    : " orders"
+            );
+
+        const monthStart =
+            startOfPakistanMonth(now);
+
+        const monthEnd =
+            endOfPakistanDay(now);
+
+        const monthOrders =
+            getOrdersBetween(
+                monthStart,
+                monthEnd
+            );
+
+        const monthSuccessfulOrders =
+            monthOrders.filter(isSalesOrder);
+
+        const monthSales =
+            monthSuccessfulOrders.reduce(
+                (sum, order) =>
+                    sum +
+                    getOrderTotal(order),
+                0
+            );
+
+        document.getElementById(
+            "monthSales"
+        ).innerText =
+            formatMoney(monthSales);
+
+        document.getElementById(
+            "monthOrders"
+        ).innerText =
+            monthOrders.length +
+            (
+                monthOrders.length === 1
+                    ? " order"
+                    : " orders"
+            );
+    }
+
+
+    // ============================================================
+    // CHART RANGE
+    // ============================================================
+
+    function getChartRange() {
+        const selected =
+            getPeriodRange();
+
+        if (!selected) {
+            return null;
+        }
+
+        if (
+            selected.start ||
+            selected.end
+        ) {
+            return selected;
+        }
+
+        /*
+         * All Time:
+         * Use the earliest and latest order date.
+         */
+        const dates =
+            allOrders
+                .map(getOrderDate)
+                .filter(Boolean);
+
+        if (!dates.length) {
+            const now =
+                new Date();
+
+            return {
+                start:
+                    startOfPakistanMonth(now),
+                end:
+                    endOfPakistanDay(now)
+            };
+        }
+
+        let minTime =
+            Infinity;
+
+        let maxTime =
+            -Infinity;
+
+        for (const date of dates) {
+            minTime =
+                Math.min(
+                    minTime,
+                    date.getTime()
+                );
+
+            maxTime =
+                Math.max(
+                    maxTime,
+                    date.getTime()
+                );
+        }
+
+        return {
+            start:
+                startOfPakistanDay(
+                    new Date(minTime)
+                ),
+            end:
+                endOfPakistanDay(
+                    new Date(maxTime)
+                )
+        };
+    }
+
+
+    // ============================================================
+    // CHARTS
+    // ============================================================
+
+    function updateCharts() {
+        const range =
+            getChartRange();
+
+        if (!range) {
+            return;
+        }
+
+        const dayCount =
+            range.start && range.end
+                ? Math.floor(
+                    (
+                        range.end.getTime() -
+                        range.start.getTime()
+                    ) /
+                    (
+                        1000 * 60 * 60 * 24
+                    )
+                ) + 1
+                : 1;
+
+        if (dayCount > 62) {
+            updateMonthlyCharts(
+                range
+            );
+            return;
+        }
+
+        const labels = [];
+        const salesData = [];
+        const ordersData = [];
+
+        let cursor =
+            startOfPakistanDay(
+                range.start
+            );
+
+        while (
+            cursor <= range.end
+        ) {
+            const key =
+                dateKey(cursor);
+
+            const dayOrders =
+                allOrders.filter(order => {
+                    const date =
+                        getOrderDate(order);
+
+                    return (
+                        date &&
+                        dateKey(date) === key
+                    );
+                });
+
+            const daySuccessfulOrders =
+                dayOrders.filter(isSalesOrder);
+
+            const sales =
+                daySuccessfulOrders.reduce(
+                    (sum, order) =>
+                        sum +
+                        getOrderTotal(order),
+                    0
+                );
+
+            labels.push(
+                cursor.toLocaleDateString(
+                    "en-PK",
+                    {
+                        timeZone:
+                            APP_TIME_ZONE,
+                        day: "numeric",
+                        month: "short"
+                    }
+                )
+            );
+
+            salesData.push(
+                sales
+            );
+
+            ordersData.push(
+                dayOrders.length
+            );
+
+            cursor =
+                addPakistanDays(
+                    cursor,
+                    1
+                );
+        }
+
+        createCharts(
+            labels,
+            salesData,
+            ordersData
+        );
+    }
+
+    function updateMonthlyCharts(
+        range
+    ) {
+        const startParts =
+            getPakistanParts(
+                range.start
+            );
+
+        const endParts =
+            getPakistanParts(
+                range.end
+            );
+
+        const labels = [];
+        const salesData = [];
+        const ordersData = [];
+
+        let year =
+            startParts.year;
+
+        let month =
+            startParts.month;
+
+        const endYear =
+            endParts.year;
+
+        const endMonth =
+            endParts.month;
+
+        while (
+            year < endYear ||
+            (
+                year === endYear &&
+                month <= endMonth
+            )
+        ) {
+            const monthlyOrders =
+                allOrders.filter(order => {
+                    const date =
+                        getOrderDate(order);
+
+                    if (!date) {
+                        return false;
+                    }
+
+                    const parts =
+                        getPakistanParts(
+                            date
+                        );
+
+                    return (
+                        parts.year === year &&
+                        parts.month === month
+                    );
+                });
+
+            const monthlySuccessfulOrders =
+                monthlyOrders.filter(isSalesOrder);
+
+            const sales =
+                monthlySuccessfulOrders.reduce(
+                    (sum, order) =>
+                        sum +
+                        getOrderTotal(order),
+                    0
+                );
+
+            const labelDate =
+                pakistanLocalToUTC(
+                    year,
+                    month,
+                    1
+                );
+
+            labels.push(
+                labelDate.toLocaleDateString(
+                    "en-PK",
+                    {
+                        timeZone:
+                            APP_TIME_ZONE,
+                        month: "short",
+                        year: "numeric"
+                    }
+                )
+            );
+
+            salesData.push(
+                sales
+            );
+
+            ordersData.push(
+                monthlyOrders.length
+            );
+
+            month++;
+
+            if (month > 12) {
+                month = 1;
+                year++;
+            }
+        }
+
+        createCharts(
+            labels,
+            salesData,
+            ordersData
+        );
+    }
+
+    function createCharts(
+        labels,
+        salesData,
+        ordersData
+    ) {
+        const salesCanvas =
+            document.getElementById(
+                "salesChart"
+            );
+
+        const ordersCanvas =
+            document.getElementById(
+                "ordersChart"
+            );
+
+        if (salesChart) {
+            salesChart.destroy();
+        }
+
+        if (ordersChart) {
+            ordersChart.destroy();
+        }
+
+        salesChart =
+            new Chart(
+                salesCanvas,
+                {
+                    type: "line",
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label:
+                                    "Sales (Rs.)",
+                                data:
+                                    salesData,
+                                borderWidth:
+                                    2,
+                                tension:
+                                    0.3,
+                                fill:
+                                    true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode:
+                                "index",
+                            intersect:
+                                false
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                }
+            );
+
+        ordersChart =
+            new Chart(
+                ordersCanvas,
+                {
+                    type: "bar",
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label:
+                                    "Successful Orders",
+                                data:
+                                    ordersData,
+                                borderWidth:
+                                    1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        }
+                    }
+                }
+            );
+    }
+
+
+    // ============================================================
+    // SALES PERIOD CONTROLS
+    // ============================================================
+
+    function handleSalesPeriodChange() {
+        const period =
+            document.getElementById(
+                "salesPeriod"
+            ).value;
+
+        const customBox =
+            document.getElementById(
+                "customDate"
+            );
+
+        if (period === "custom") {
+            customBox.classList.add(
+                "show"
+            );
+            return;
+        }
+
+        customBox.classList.remove(
+            "show"
+        );
+
+        customDateRange = null;
+
+        updateSalesDashboard();
+    }
+
+    function applyCustomDate() {
+        const start =
+            document.getElementById(
+                "startDate"
+            ).value;
+
+        const end =
+            document.getElementById(
+                "endDate"
+            ).value;
+
+        if (!start || !end) {
+            alert(
+                "Please select both start and end dates."
+            );
+            return;
+        }
+
+        if (start > end) {
+            alert(
+                "Start date cannot be after end date."
+            );
+            return;
+        }
+
+        customDateRange = {
+            start,
+            end
+        };
+
+        updateSalesDashboard();
+    }
+
+
+    // ============================================================
+    // ORDER LIST
     // ============================================================
 
     function renderOrders() {
-
         const container =
-            document.getElementById("ordersContainer");
+            document.getElementById(
+                "ordersContainer"
+            );
+
+        const searchInput =
+            document.getElementById(
+                "searchInput"
+            );
+
+        const filterSelect =
+            document.getElementById(
+                "statusFilter"
+            );
 
         const search =
-            document.getElementById("searchInput")
-                .value
+            String(
+                searchInput?.value || ""
+            )
                 .toLowerCase()
                 .trim();
 
         const statusFilter =
-            document.getElementById("statusFilter").value;
+            normalizeStatus(
+                filterSelect?.value || "all"
+            );
 
+        let filteredOrders =
+            allOrders.filter(order => {
+                const status =
+                    normalizeStatus(
+                        order.status
+                    );
 
-        let filteredOrders = allOrders.filter(order => {
-
-            // STATUS FILTER
-
-            if (
-                statusFilter !== "all" &&
-                order.status !== statusFilter
-            ) {
-                return false;
-            }
-
-
-            // SEARCH FILTER
-
-            if (search) {
-
-                const searchableText = [
-
-                    order.customer_name,
-
-                    order.customer_phone,
-
-                    order.customer_location,
-
-                    order.order_note,
-
-                    order.delivery_time,
-
-                    order.status
-
-                ]
-                .filter(Boolean)
-                .join(" ")
-                .toLowerCase();
-
-                if (!searchableText.includes(search)) {
+                if (
+                    statusFilter !== "all" &&
+                    status !== statusFilter
+                ) {
                     return false;
                 }
-            }
 
-            return true;
-        });
+                if (!search) {
+                    return true;
+                }
 
+                const searchableText = [
+                    getOrderNumber(order),
+                    order.id,
+                    order.customer_name,
+                    order.customer_phone,
+                    order.customer_location,
+                    order.order_note,
+                    order.delivery_time,
+                    order.status
+                ]
+                    .filter(
+                        value =>
+                            value !== null &&
+                            value !== undefined
+                    )
+                    .join(" ")
+                    .toLowerCase();
 
-        if (filteredOrders.length === 0) {
+                return searchableText.includes(
+                    search
+                );
+            });
 
+        filteredOrders.sort(
+            compareOrderNumbers
+        );
+
+        if (!filteredOrders.length) {
             container.innerHTML = `
                 <div class="empty">
                     <h2>📦 No Orders Found</h2>
@@ -759,230 +2874,184 @@ checkAdminAccess();
                     </p>
                 </div>
             `;
-
             return;
         }
 
-
-        container.innerHTML = filteredOrders
-            .map(order => createOrderCard(order))
-            .join("");
+        container.innerHTML =
+            filteredOrders
+                .map(createOrderCard)
+                .join("");
     }
 
-
-    // ============================================================
-    // CREATE ORDER CARD
-    // ============================================================
-
     function createOrderCard(order) {
-
         const status =
-            order.status || "pending";
+            normalizeStatus(
+                order.status
+            ) || "pending";
 
-        const statusClass =
-            "status-" +
-            status.toLowerCase().replace(/ /g, "_");
-
+        const orderNumber =
+            getOrderNumber(order);
 
         const createdAt =
-            order.created_at
-                ? formatDate(order.created_at)
-                : "Unknown";
-
+            formatDate(
+                order.created_at
+            );
 
         const itemsHTML =
-            formatItems(order.items);
-
+            formatItems(
+                order.items
+            );
 
         const total =
-            Number(order.total_amount || 0);
-
+            getOrderTotal(order);
 
         const phone =
-            order.customer_phone || "Not provided";
-
+            order.customer_phone ||
+            "Not provided";
 
         const location =
-            order.customer_location || "Not provided";
-
+            order.customer_location ||
+            "Not provided";
 
         const deliveryTime =
-            order.delivery_time || "Not specified";
-
+            order.delivery_time ||
+            "Not specified";
 
         const note =
-            order.order_note || "No special instructions";
+            order.order_note ||
+            "No special instructions";
 
+        const safeId =
+            escapeAttribute(
+                String(
+                    order.id ?? ""
+                )
+            );
 
         return `
-
-            <div class="order-card">
-
-                <!-- ORDER HEADER -->
+            <div class="order-card"
+                 data-order-id="${safeId}">
 
                 <div class="order-top">
-
                     <div>
-
                         <div class="order-number">
-                            Order #${escapeHTML(String(order.id || "N/A"))}
+                            🧾 Order #${escapeHTML(
+                                orderNumber
+                            )}
                         </div>
 
                         <div class="order-date">
                             ${escapeHTML(createdAt)}
                         </div>
-
                     </div>
 
-                    <span class="status ${statusClass}">
-                        ${escapeHTML(formatStatus(status))}
+                    <span class="status status-${escapeAttribute(
+                        status
+                    )}">
+                        ${escapeHTML(
+                            formatStatus(status)
+                        )}
                     </span>
-
                 </div>
-
-
-                <!-- CUSTOMER INFORMATION -->
 
                 <div class="info-grid">
 
                     <div class="info-box">
-
                         <strong>Customer</strong>
-
                         <span>
                             ${escapeHTML(
-                                order.customer_name || "Not provided"
+                                order.customer_name ||
+                                "Not provided"
                             )}
                         </span>
-
                     </div>
 
-
                     <div class="info-box">
-
                         <strong>Phone</strong>
-
                         <span>
                             ${escapeHTML(phone)}
                         </span>
-
                     </div>
 
-
                     <div class="info-box">
-
                         <strong>Location</strong>
-
                         <span>
                             ${escapeHTML(location)}
                         </span>
-
                     </div>
-
 
                     <div class="info-box">
-
                         <strong>Delivery Time</strong>
-
                         <span>
-                            ${escapeHTML(deliveryTime)}
+                            ${escapeHTML(
+                                deliveryTime
+                            )}
                         </span>
-
                     </div>
 
                 </div>
 
-
-                <!-- ITEMS -->
-
                 <div class="items-section">
-
                     <h3>🛒 Ordered Items</h3>
-
                     ${itemsHTML}
-
                 </div>
 
-
-                <!-- NOTE -->
-
-                <div class="info-box" style="margin-bottom:18px;">
-
+                <div
+                    class="info-box"
+                    style="margin-bottom:18px;"
+                >
                     <strong>Order Note</strong>
-
                     <span>
                         ${escapeHTML(note)}
                     </span>
-
                 </div>
-
-
-                <!-- TOTAL -->
 
                 <div class="total-box">
-
                     <strong>Total</strong>
-
                     <span class="total-price">
-                        Rs. ${total.toLocaleString()}
+                        ${formatMoney(total)}
                     </span>
-
                 </div>
-
-
-                <!-- ACTIONS -->
 
                 <div class="actions">
 
                     <select
-                        id="status-${order.id}"
+                        class="status-select"
+                        aria-label="Change order status"
                     >
-
-                        <option
-                            value="pending"
-                            ${status === "pending" ? "selected" : ""}
-                        >
+                        <option value="pending"
+                            ${status === "pending" ? "selected" : ""}>
                             Pending
                         </option>
 
-                        <option
-                            value="completed"
-                            ${status === "completed" ? "selected" : ""}
-                        >
+                        <option value="completed"
+                            ${status === "completed" ? "selected" : ""}>
                             Completed
                         </option>
 
-                        <option
-                            value="out_for_delivery"
-                            ${status === "out_for_delivery" ? "selected" : ""}
-                        >
+                        <option value="out_for_delivery"
+                            ${status === "out_for_delivery" ? "selected" : ""}>
                             Out for Delivery
                         </option>
 
-                        <option
-                            value="delivered"
-                            ${status === "delivered" ? "selected" : ""}
-                        >
+                        <option value="delivered"
+                            ${status === "delivered" ? "selected" : ""}>
                             Delivered
                         </option>
 
-                        <option
-                            value="cancelled"
-                            ${status === "cancelled" ? "selected" : ""}
-                        >
+                        <option value="cancelled"
+                            ${status === "cancelled" ? "selected" : ""}>
                             Cancelled
                         </option>
-
                     </select>
-
 
                     <button
                         class="action-btn save-btn"
-                        onclick="changeStatus('${escapeAttribute(String(order.id))}')"
+                        data-order-id="${safeId}"
+                        onclick="changeStatusFromButton(this)"
                     >
                         💾 Update Status
                     </button>
-
 
                     <a
                         class="action-btn call-btn"
@@ -991,11 +3060,13 @@ checkAdminAccess();
                         📞 Call
                     </a>
 
-
                     <a
                         class="action-btn map-btn"
-                        href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}"
+                        href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                            location
+                        )}"
                         target="_blank"
+                        rel="noopener noreferrer"
                     >
                         📍 Map
                     </a>
@@ -1003,39 +3074,137 @@ checkAdminAccess();
                 </div>
 
             </div>
-
         `;
     }
 
 
     // ============================================================
-    // FORMAT ITEMS
+    // ITEMS
     // ============================================================
 
-    function formatItems(items) {
+    function parseItems(items) {
+        let parsed =
+            items;
 
-        let parsedItems = items;
-
-        try {
-
-            if (typeof items === "string") {
-                parsedItems = JSON.parse(items);
+        if (typeof parsed === "string") {
+            try {
+                parsed =
+                    JSON.parse(
+                        parsed
+                    );
+            } catch {
+                return null;
             }
+        }
 
-        } catch (error) {
+        /*
+         * Support either:
+         *   [ ... ]
+         * or
+         *   { items: [ ... ] }
+         */
+        if (
+            parsed &&
+            !Array.isArray(parsed) &&
+            Array.isArray(parsed.items)
+        ) {
+            parsed =
+                parsed.items;
+        }
 
+        return Array.isArray(parsed)
+            ? parsed
+            : null;
+    }
+
+    function getItemName(item) {
+        return (
+            item?.name ||
+            item?.title ||
+            item?.item_name ||
+            "Item"
+        );
+    }
+
+    function getItemVariant(item) {
+        return (
+            item?.variant ||
+            item?.size ||
+            item?.option ||
+            ""
+        );
+    }
+
+    function getItemQuantity(item) {
+        const quantity =
+            parseNumber(
+                item?.quantity ?? 1
+            );
+
+        return quantity > 0
+            ? quantity
+            : 1;
+    }
+
+    function getItemLineTotal(item) {
+        const quantity =
+            getItemQuantity(item);
+
+        /*
+         * Prefer an already stored line total/subtotal when available.
+         * Otherwise calculate unit price × quantity.
+         */
+        const explicitTotal =
+            item?.subtotal ??
+            item?.item_total ??
+            item?.total ??
+            item?.line_total;
+
+        if (
+            explicitTotal !==
+            null &&
+            explicitTotal !==
+            undefined &&
+            explicitTotal !== ""
+        ) {
+            return parseNumber(
+                explicitTotal
+            );
+        }
+
+        const unitPrice =
+            item?.price ??
+            item?.unit_price ??
+            item?.unitPrice ??
+            item?.selectedPrice ??
+            0;
+
+        return (
+            parseNumber(unitPrice) *
+            quantity
+        );
+    }
+
+    function formatItems(items) {
+        const parsedItems =
+            parseItems(items);
+
+        if (!parsedItems) {
             return `
                 <div class="item">
                     <div class="item-left">
-                        ${escapeHTML(String(items || "No items"))}
+                        ${escapeHTML(
+                            String(
+                                items ||
+                                "No items"
+                            )
+                        )}
                     </div>
                 </div>
             `;
         }
 
-
-        if (!Array.isArray(parsedItems) || parsedItems.length === 0) {
-
+        if (!parsedItems.length) {
             return `
                 <div class="item">
                     <div class="item-left">
@@ -1045,247 +3214,253 @@ checkAdminAccess();
             `;
         }
 
+        return parsedItems
+            .map(item => {
+                const name =
+                    getItemName(item);
 
-        return parsedItems.map(item => {
+                const variant =
+                    getItemVariant(item);
 
-            const name =
-                item.name ||
-                item.title ||
-                "Item";
+                const quantity =
+                    getItemQuantity(item);
 
-            const variant =
-                item.variant ||
-                item.size ||
-                "";
+                const itemTotal =
+                    getItemLineTotal(item);
 
-            const quantity =
-                Number(item.quantity || 1);
+                return `
+                    <div class="item">
+                        <div class="item-left">
+                            <div class="item-name">
+                                ${escapeHTML(
+                                    String(name)
+                                )}
+                                × ${quantity}
+                            </div>
 
-            const price =
-                Number(item.price || 0);
-
-            const itemTotal =
-                price * quantity;
-
-
-            return `
-
-                <div class="item">
-
-                    <div class="item-left">
-
-                        <div class="item-name">
-                            ${escapeHTML(String(name))}
-                            × ${quantity}
+                            ${
+                                variant
+                                    ? `
+                                        <div class="item-variant">
+                                            ${escapeHTML(
+                                                String(
+                                                    variant
+                                                )
+                                            )}
+                                        </div>
+                                    `
+                                    : ""
+                            }
                         </div>
 
-                        ${
-                            variant
-                            ? `
-                                <div class="item-variant">
-                                    ${escapeHTML(String(variant))}
-                                </div>
-                            `
-                            : ""
-                        }
-
+                        <div class="item-right">
+                            ${formatMoney(
+                                itemTotal
+                            )}
+                        </div>
                     </div>
-
-
-                    <div class="item-right">
-                        Rs. ${itemTotal.toLocaleString()}
-                    </div>
-
-                </div>
-
-            `;
-
-        }).join("");
+                `;
+            })
+            .join("");
     }
 
 
     // ============================================================
-    // CHANGE STATUS
+    // STATUS UPDATE
     // ============================================================
 
-    async function changeStatus(orderId) {
+    async function changeStatusFromButton(
+        button
+    ) {
+        if (
+            !button ||
+            isUpdatingStatus
+        ) {
+            return;
+        }
+
+        const orderId =
+            button.dataset.orderId;
+
+        if (
+            orderId === undefined ||
+            orderId === null ||
+            orderId === ""
+        ) {
+            alert(
+                "This order does not have a valid database ID."
+            );
+            return;
+        }
+
+        const card =
+            button.closest(
+                ".order-card"
+            );
 
         const select =
-            document.getElementById(
-                "status-" + orderId
+            card?.querySelector(
+                ".status-select"
             );
 
         if (!select) {
-            alert("Status selector not found.");
+            alert(
+                "Unable to find the status selector for this order."
+            );
             return;
         }
-
 
         const newStatus =
-            select.value;
-
-
-        const confirmChange =
-            confirm(
-                "Change this order status to " +
-                formatStatus(newStatus) +
-                "?"
+            normalizeStatus(
+                select.value
             );
 
+        const localOrder =
+            allOrders.find(
+                order =>
+                    String(order.id) ===
+                    String(orderId)
+            );
 
-        if (!confirmChange) {
+        if (!localOrder) {
+            alert(
+                "Order not found. Please refresh the panel."
+            );
             return;
         }
 
+        const oldStatus =
+            normalizeStatus(
+                localOrder.status
+            );
+
+        if (
+            oldStatus === newStatus
+        ) {
+            return;
+        }
+
+        isUpdatingStatus = true;
+
+        const oldButtonText =
+            button.innerText;
+
+        button.disabled = true;
+        button.innerText =
+            "Updating...";
 
         try {
-
-            const { error } =
+            const {
+                data,
+                error
+            } =
                 await supabaseClient
                     .from("orders")
                     .update({
-                        status: newStatus
+                        status:
+                            newStatus
                     })
-                    .eq("id", orderId);
-
+                    .eq(
+                        "id",
+                        orderId
+                    )
+                    .select(
+                        "id,status"
+                    )
+                    .maybeSingle();
 
             if (error) {
-
-                console.error(
-                    "Status Update Error:",
-                    error
-                );
-
-                alert(
-                    "Failed to update status:\n" +
-                    error.message
-                );
-
-                return;
+                throw error;
             }
 
-
-            // Update local data immediately
-
-            const order =
-                allOrders.find(
-                    item =>
-                        String(item.id) ===
-                        String(orderId)
+            if (!data) {
+                throw new Error(
+                    "Order was not updated. Check the Admin UPDATE policy in Supabase."
                 );
-
-
-            if (order) {
-                order.status = newStatus;
             }
 
+            /*
+             * Update only this exact order in memory.
+             * No other order is changed.
+             */
+            localOrder.status =
+                normalizeStatus(
+                    data.status
+                ) ||
+                newStatus;
+
+            allOrders.sort(
+                compareOrderNumbers
+            );
 
             updateStats();
-
+            updateSalesDashboard();
             renderOrders();
 
+        } catch (error) {
+            console.error(
+                "Status update error:",
+                error
+            );
 
             alert(
-                "Order status updated to " +
-                formatStatus(newStatus)
+                "Failed to update status:\n" +
+                (
+                    error?.message ||
+                    "Unknown error"
+                )
             );
 
-        } catch (error) {
+            /*
+             * Restore the previous state in the current card.
+             */
+            select.value =
+                oldStatus;
 
-            console.error(error);
+            button.disabled = false;
+            button.innerText =
+                oldButtonText;
 
-            alert(
-                "Unexpected error:\n" +
-                error.message
-            );
+        } finally {
+            isUpdatingStatus = false;
         }
     }
 
 
     // ============================================================
-    // FORMAT STATUS
+    // INITIALIZE
     // ============================================================
 
-    function formatStatus(status) {
+    async function initializeAdmin() {
+        const allowed =
+            await checkAdminAccess();
 
-        if (!status) {
-            return "Pending";
+        if (!allowed) {
+            return;
         }
 
-        return status
-            .replace(/_/g, " ")
-            .replace(/\b\w/g, letter =>
-                letter.toUpperCase()
-            );
+        await loadOrders();
     }
 
-
-    // ============================================================
-    // FORMAT DATE
-    // ============================================================
-
-    function formatDate(dateString) {
-
-        try {
-
-            const date =
-                new Date(dateString);
-
-            return date.toLocaleString(
-                "en-PK",
-                {
-                    dateStyle: "medium",
-                    timeStyle: "short"
-                }
-            );
-
-        } catch (error) {
-
-            return dateString;
-        }
-    }
-
-
-    // ============================================================
-    // SECURITY HELPERS
-    // ============================================================
-
-    function escapeHTML(value) {
-
-        return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-
-    function escapeAttribute(value) {
-
-        return String(value)
-            .replace(/'/g, "\\'")
-            .replace(/"/g, "&quot;");
-    }
-
-
-    // ============================================================
-    // INITIAL LOAD
-    // ============================================================
-
-    loadOrders();
+    initializeAdmin();
 
 
     // ============================================================
     // AUTO REFRESH
     // ============================================================
 
-    
-
-        loadOrders();
-
+    setInterval(
+        () => {
+            loadOrders({
+                silent: true
+            });
+        },
+        60000
+    );
 
 </script>
 
+
 </body>
+
 </html>
