@@ -1,821 +1,330 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Dastarkhwan 804 - Kitchen Panel</title>
-
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dastarkhwan 804 - Kitchen Panel</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f5f5f5; color: #222; }
+    header { background: #111; color: white; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 100; }
+    header h1 { margin: 0; font-size: 22px; }
+    header p { margin: 4px 0 0; color: #aaa; font-size: 13px; }
+    #refreshBtn { border: none; background: white; color: #111; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    #refreshBtn:hover { background: #ddd; }
+    .container { max-width: 1200px; margin: auto; padding: 20px; }
+    .filters { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+    .filter-chip { background: white; border: 1px solid #ddd; padding: 8px 16px; border-radius: 30px; font-weight: bold; font-size: 13px; cursor: pointer; transition: .2s; }
+    .filter-chip.active { background: #111; color: white; border-color: #111; }
+    .filter-chip:hover { border-color: #111; }
+    .order-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+    .order-card { background: white; border-radius: 14px; padding: 18px; box-shadow: 0 3px 15px rgba(0,0,0,0.08); border-left: 5px solid #ff9800; position: relative; transition: .3s; }
+    .order-card.type-delivery { border-left-color: #ff9800; }
+    .order-card.type-pickup   { border-left-color: #2196f3; }
+    .order-card.type-dinein   { border-left-color: #9c27b0; }
+    .order-card.urgent { animation: pulseRed 2s infinite; background: #fff5f5; }
+    .order-card.critical { animation: pulseRed 1s infinite; background: #ffe8e8; border-left-color: #d32f2f !important; }
+    @keyframes pulseRed {
+        0%, 100% { box-shadow: 0 3px 15px rgba(0,0,0,0.08); }
+        50% { box-shadow: 0 3px 25px rgba(211, 47, 47, 0.4); }
     }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      color: #222;
-    }
-
-    header {
-      background: #111;
-      color: white;
-      padding: 18px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
-
-    #refreshBtn {
-      border: none;
-      background: white;
-      color: #111;
-      padding: 10px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    #refreshBtn:hover {
-      background: #ddd;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    .order-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-    }
-
-    .order-card {
-      background: white;
-      border-radius: 14px;
-      padding: 18px;
-      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
-      border-left: 5px solid #ff9800;
-    }
-
-    .order-card h2 {
-      margin-top: 0;
-      margin-bottom: 10px;
-    }
-
-    .order-info {
-      margin: 8px 0;
-      line-height: 1.5;
-    }
-
-    .items {
-      background: #f7f7f7;
-      padding: 12px;
-      border-radius: 10px;
-      margin: 12px 0;
-    }
-
-    .item {
-      padding: 8px 0;
-      border-bottom: 1px solid #ddd;
-      line-height: 1.5;
-    }
-
-    .item:last-child {
-      border-bottom: none;
-    }
-
-    .status {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 20px;
-      background: #fff3cd;
-      color: #856404;
-      font-weight: bold;
-      font-size: 13px;
-      text-transform: uppercase;
-    }
-
-    .complete-btn {
-      width: 100%;
-      border: none;
-      background: #198754;
-      color: white;
-      padding: 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
-    .complete-btn:hover {
-      background: #157347;
-    }
-
-    .complete-btn:disabled {
-      background: #999;
-      cursor: not-allowed;
-    }
-
-    .empty {
-      text-align: center;
-      background: white;
-      padding: 40px;
-      border-radius: 14px;
-      grid-column: 1 / -1;
-    }
-
-    .empty h3 {
-      margin-bottom: 8px;
-    }
-
-    .error {
-      background: #f8d7da;
-      color: #721c24;
-      padding: 15px;
-      border-radius: 10px;
-      grid-column: 1 / -1;
-    }
-
-    @media (max-width: 600px) {
-
-      header {
-        padding: 15px;
-      }
-
-      header h1 {
-        font-size: 18px;
-      }
-
-      #refreshBtn {
-        padding: 9px 12px;
+    .timer {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 30px;
+        background: #e8f5e9;
+        color: #2e7d32;
+        font-weight: 800;
         font-size: 13px;
-      }
-
-      .container {
-        padding: 15px;
-      }
-
-      .order-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .order-card {
-        padding: 15px;
-      }
+        font-family: 'Courier New', monospace;
+        letter-spacing: .5px;
+        border: 1px solid #c8e6c9;
     }
-  </style>
+    .timer.warn { background: #fff3e0; color: #e65100; border-color: #ffe0b2; }
+    .timer.urgent { background: #ffebee; color: #c62828; border-color: #ffcdd2; animation: blinkTimer .8s infinite; }
+    @keyframes blinkTimer {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    .timer i { font-size: 12px; }
+    .order-card h2 { margin: 0 0 10px; font-size: 18px; padding-right: 100px; }
+    .type-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; letter-spacing: .5px; }
+    .type-badge.delivery { background: #fff3e0; color: #e65100; }
+    .type-badge.pickup   { background: #e3f2fd; color: #0d47a1; }
+    .type-badge.dinein   { background: #f3e5f5; color: #4a148c; }
+    .order-info { margin: 8px 0; line-height: 1.5; font-size: 14px; }
+    .items { background: #f7f7f7; padding: 12px; border-radius: 10px; margin: 12px 0; }
+    .item { padding: 8px 0; border-bottom: 1px solid #ddd; line-height: 1.5; font-size: 14px; }
+    .item:last-child { border-bottom: none; }
+    .status { display: inline-block; padding: 6px 10px; border-radius: 20px; background: #fff3cd; color: #856404; font-weight: bold; font-size: 12px; text-transform: uppercase; margin-bottom: 10px; }
+    .complete-btn { width: 100%; border: none; background: #198754; color: white; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; margin-top: 10px; }
+    .complete-btn:hover { background: #157347; }
+    .complete-btn:disabled { background: #999; cursor: not-allowed; }
+    .empty { text-align: center; background: white; padding: 40px; border-radius: 14px; grid-column: 1 / -1; }
+    .empty h3 { margin-bottom: 8px; }
+    .error { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; grid-column: 1 / -1; }
+    @media (max-width: 600px) {
+        header { padding: 15px; }
+        header h1 { font-size: 17px; }
+        #refreshBtn { padding: 9px 12px; font-size: 13px; }
+        .container { padding: 15px; }
+        .order-grid { grid-template-columns: 1fr; }
+        .order-card h2 { padding-right: 0; }
+        .timer { position: static; display: inline-flex; margin-bottom: 10px; }
+    }
+</style>
 </head>
-
 <body>
 
 <header>
-
-  <h1>🍳 Dastarkhwan 804 — Kitchen</h1>
-
-  <button id="refreshBtn">
-    🔄 Refresh Orders
-  </button>
-
+    <div>
+        <h1>🍳 Dastarkhwan 804 — Kitchen</h1>
+        <p>All order types · Live prep timer</p>
+    </div>
+    <button id="refreshBtn">🔄 Refresh Orders</button>
 </header>
 
-
 <div class="container">
-
-  <h2>Pending Orders</h2>
-
-  <div id="orders" class="order-grid">
-
-    <div class="empty">
-      Loading orders...
+    <div class="filters">
+        <button class="filter-chip active" data-filter="all">All Orders</button>
+        <button class="filter-chip" data-filter="delivery">🚴 Delivery</button>
+        <button class="filter-chip" data-filter="pickup">🏪 Pickup</button>
+        <button class="filter-chip" data-filter="dinein">🍽️ Dine-in</button>
     </div>
-
-  </div>
-
+    <div id="orders" class="order-grid">
+        <div class="empty">Loading orders...</div>
+    </div>
 </div>
 
-
 <script>
+    const SUPABASE_URL = "https://zghtapcdtldnfthfdfjw.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_HB5cqP48gvhK9uxIyIVMUA_MT2B1CJN";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // ============================================================
-  // SUPABASE SETUP
-  // ============================================================
+    let allOrders = [];
+    let activeFilter = 'all';
+    let timerInterval = null;
 
-  const SUPABASE_URL =
-    "https://zghtapcdtldnfthfdfjw.supabase.co";
-
-
-  // Your Supabase PUBLISHABLE key
-  // Never use the secret key here.
-
-  const SUPABASE_ANON_KEY =
-    "sb_publishable_HB5cqP48gvhK9uxIyIVMUA_MT2B1CJN";
-
-
-  const supabaseClient =
-    supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
-
-
-  // ============================================================
-  // LOAD PENDING ORDERS
-  // ============================================================
-
-  async function loadOrders() {
-
-    const container =
-      document.getElementById("orders");
-
-
-    container.innerHTML = `
-      <div class="empty">
-        Loading orders...
-      </div>
-    `;
-
-
-    try {
-
-      /*
-        IMPORTANT:
-
-        Kitchen only loads orders whose status
-        is "pending".
-
-        When the kitchen changes the order to
-        "completed", it will no longer be returned
-        by this query.
-      */
-
-      const { data, error } =
-        await supabaseClient
-          .from("orders")
-          .select("*")
-          .eq("status", "pending")
-          .order("created_at", {
-            ascending: true
-          });
-
-
-      if (error) {
-
-        console.error(
-          "SUPABASE ERROR:",
-          error
-        );
-
-
-        container.innerHTML = `
-          <div class="error">
-
-            <h3>Unable to load orders</h3>
-
-            <p>
-              ${escapeHTML(error.message)}
-            </p>
-
-          </div>
-        `;
-
-        return;
-      }
-
-
-      console.log(
-        "PENDING ORDERS:",
-        data
-      );
-
-
-      // ========================================================
-      // NO PENDING ORDERS
-      // ========================================================
-
-      if (!data || data.length === 0) {
-
-        container.innerHTML = `
-          <div class="empty">
-
-            <h3>🍽️ No Pending Orders</h3>
-
-            <p>
-              New customer orders will appear here.
-            </p>
-
-          </div>
-        `;
-
-        return;
-      }
-
-
-      // ========================================================
-      // CLEAR CONTAINER
-      // ========================================================
-
-      container.innerHTML = "";
-
-
-      // ========================================================
-      // DISPLAY ORDERS
-      // ========================================================
-
-      data.forEach(order => {
-
-        let itemsHTML = "";
-
-
-        // ======================================================
-        // PARSE ITEMS
-        // ======================================================
+    async function loadOrders() {
+        const container = document.getElementById("orders");
+        container.innerHTML = `<div class="empty">Loading orders...</div>`;
 
         try {
+            const { data, error } = await supabaseClient
+                .from("orders")
+                .select("*")
+                .eq("status", "pending")
+                .order("created_at", { ascending: true });
 
-          const items =
-            typeof order.items === "string"
-              ? JSON.parse(order.items)
-              : order.items;
+            if (error) {
+                container.innerHTML = `<div class="error"><h3>Unable to load orders</h3><p>${escapeHTML(error.message)}</p></div>`;
+                return;
+            }
 
+            allOrders = data || [];
+            renderOrders();
+            startTimerTick();
 
-          if (Array.isArray(items)) {
+        } catch (err) {
+            container.innerHTML = `<div class="error"><h3>Unexpected Error</h3><p>${escapeHTML(err.message)}</p></div>`;
+        }
+    }
 
-            items.forEach(item => {
+    function renderOrders() {
+        const container = document.getElementById("orders");
+        const filtered = activeFilter === 'all'
+            ? allOrders
+            : allOrders.filter(o => (o.order_type || 'delivery') === activeFilter);
 
-              const itemName =
-                item.name ||
-                "Item";
-
-
-              const variant =
-                item.variant
-                  ? ` — ${item.variant}`
-                  : "";
-
-
-              const quantity =
-                item.quantity || 1;
-
-
-              const price =
-                item.price
-                  ? `<br>Rs. ${Number(item.price).toLocaleString()}`
-                  : "";
-
-
-              itemsHTML += `
-
-                <div class="item">
-
-                  <strong>
-                    ${escapeHTML(
-                      String(itemName)
-                    )}
-                  </strong>
-
-                  ${escapeHTML(
-                    String(variant)
-                  )}
-
-                  × ${quantity}
-
-                  ${price}
-
-                </div>
-
-              `;
-
-            });
-
-          } else {
-
-            itemsHTML = `
-              <div class="item">
-                ${escapeHTML(
-                  String(order.items || "No items")
-                )}
-              </div>
-            `;
-
-          }
-
-        } catch (e) {
-
-          itemsHTML = `
-
-            <div class="item">
-
-              ${escapeHTML(
-                String(order.items || "No items")
-              )}
-
-            </div>
-
-          `;
-
+        if (!filtered.length) {
+            container.innerHTML = `<div class="empty"><h3>🍽️ No Pending Orders</h3><p>New ${activeFilter === 'all' ? '' : activeFilter + ' '}orders will appear here.</p></div>`;
+            return;
         }
 
-
-        // ======================================================
-        // CREATE CARD
-        // ======================================================
-
-        const card =
-          document.createElement("div");
-
-
-        card.className =
-          "order-card";
-
-
-        card.innerHTML = `
-
-          <h2>
-            Order #${escapeHTML(
-              String(order.id || "N/A")
-            )}
-          </h2>
-
-
-          <span class="status">
-            ${escapeHTML(
-              String(order.status || "pending")
-            )}
-          </span>
-
-
-          <div class="order-info">
-
-            <strong>Customer:</strong>
-
-            ${escapeHTML(
-              String(
-                order.customer_name ||
-                "N/A"
-              )
-            )}
-
-          </div>
-
-
-          <div class="order-info">
-
-            <strong>Phone:</strong>
-
-            ${escapeHTML(
-              String(
-                order.customer_phone ||
-                "N/A"
-              )
-            )}
-
-          </div>
-
-
-          <div class="order-info">
-
-            <strong>Location:</strong>
-
-            ${escapeHTML(
-              String(
-                order.customer_location ||
-                "N/A"
-              )
-            )}
-
-          </div>
-
-
-          <div class="order-info">
-
-            <strong>Delivery:</strong>
-
-            ${escapeHTML(
-              String(
-                order.delivery_time ||
-                "ASAP"
-              )
-            )}
-
-          </div>
-
-
-          <div class="items">
-
-            <strong>🛒 Items</strong>
-
-            ${itemsHTML}
-
-          </div>
-
-
-          <div class="order-info">
-
-            <strong>Note:</strong>
-
-            ${escapeHTML(
-              String(
-                order.order_note ||
-                "No special instructions"
-              )
-            )}
-
-          </div>
-
-
-          <div class="order-info">
-
-            <strong>Total:</strong>
-
-            Rs.
-            ${Number(
-              order.total_amount || 0
-            ).toLocaleString()}
-
-          </div>
-
-
-          <button
-            class="complete-btn"
-            data-order-id="${escapeHTML(
-              String(order.id)
-            )}"
-          >
-            ✅ Mark as Completed
-          </button>
-
-        `;
-
-
-        // ======================================================
-        // BUTTON EVENT
-        // ======================================================
-
-        const completeButton =
-          card.querySelector(
-            ".complete-btn"
-          );
-
-
-        completeButton.addEventListener(
-          "click",
-          () => {
-
-            completeOrder(
-              order.id,
-              completeButton,
-              card
-            );
-
-          }
-        );
-
-
-        container.appendChild(card);
-
-      });
-
-    } catch (error) {
-
-      console.error(error);
-
-
-      container.innerHTML = `
-
-        <div class="error">
-
-          <h3>Unexpected Error</h3>
-
-          <p>
-            ${escapeHTML(
-              String(error.message)
-            )}
-          </p>
-
-        </div>
-
-      `;
-
+        container.innerHTML = '';
+        filtered.forEach(order => {
+            const type = (order.order_type || 'delivery').toLowerCase();
+            const card = document.createElement('div');
+            card.className = 'order-card type-' + type;
+            card.setAttribute('data-order-id', order.id);
+            card.setAttribute('data-created-at', order.created_at || '');
+
+            let buttonText = '✅ Mark as Completed';
+            if (type === 'pickup') buttonText = '✅ Mark as Picked Up';
+            if (type === 'dinein') buttonText = '✅ Mark as Served';
+
+            const elapsed = getElapsedMinutes(order.created_at);
+
+            card.innerHTML = `
+                <div class="timer" data-timer>
+                    <i class="fas fa-hourglass-half"></i>
+                    <span data-timer-text>--:--</span>
+                </div>
+                <h2>Order #${escapeHTML(String(order.id || 'N/A'))}</h2>
+                <span class="type-badge ${type}">${escapeHTML(formatType(type))}</span>
+                <span class="status">${escapeHTML(order.status || 'pending')}</span>
+
+                <div class="order-info"><strong>Customer:</strong> ${escapeHTML(order.customer_name || 'N/A')}</div>
+                <div class="order-info"><strong>Phone:</strong> ${escapeHTML(order.customer_phone || 'N/A')}</div>
+                <div class="order-info"><strong>${type === 'delivery' ? 'Address' : 'Location'}:</strong> ${escapeHTML(order.customer_location || 'N/A')}</div>
+                <div class="order-info"><strong>Time:</strong> ${escapeHTML(order.delivery_time || 'ASAP')}</div>
+
+                <div class="items">
+                    <strong>🛒 Items</strong>
+                    ${formatItems(order.items)}
+                </div>
+
+                <div class="order-info"><strong>Note:</strong> ${escapeHTML(order.order_note || 'No special instructions')}</div>
+                <div class="order-info"><strong>Total:</strong> Rs. ${Number(order.total_amount || 0).toLocaleString()}</div>
+
+                <button class="complete-btn" data-order-id="${escapeHTML(String(order.id))}">
+                    ${buttonText}
+                </button>
+            `;
+
+            const btn = card.querySelector(".complete-btn");
+            btn.addEventListener("click", () => completeOrder(order.id, btn, card));
+
+            container.appendChild(card);
+        });
+
+        updateTimers();
     }
 
-  }
+    // ─────────────────────────────────────────────────────────
+    // FEATURE 17 — LIVE TIMER PER ORDER
+    // ─────────────────────────────────────────────────────────
 
-
-  // ============================================================
-  // COMPLETE ORDER
-  // ============================================================
-
-  async function completeOrder(
-    orderId,
-    button,
-    card
-  ) {
-
-
-
-
-    // Prevent double clicking
-
-    button.disabled = true;
-
-    button.innerText =
-      "Updating...";
-
-
-    try {
-
-      const { error } =
-        await supabaseClient
-          .from("orders")
-          .update({
-            status: "completed"
-          })
-          .eq("id", orderId);
-
-
-      // ========================================================
-      // UPDATE ERROR
-      // ========================================================
-
-      if (error) {
-
-        console.error(
-          "UPDATE ERROR:",
-          error
-        );
-
-
-        alert(
-          "Failed to update order:\n\n" +
-          error.message
-        );
-
-
-        button.disabled = false;
-
-        button.innerText =
-          "✅ Mark as Completed";
-
-        return;
-      }
-
-
-      // ========================================================
-      // SUCCESS
-      // ========================================================
-
-      alert(
-        "✅ Order marked as completed!"
-      );
-
-
-      /*
-        Remove the order immediately from the
-        Kitchen screen.
-
-        This means the order disappears even
-        before loadOrders() finishes.
-      */
-
-      if (card) {
-        card.remove();
-      }
-
-
-      /*
-        Check if there are no more orders.
-      */
-
-      const container =
-        document.getElementById(
-          "orders"
-        );
-
-
-      if (
-        container.children.length === 0
-      ) {
-
-        container.innerHTML = `
-
-          <div class="empty">
-
-            <h3>🍽️ No Pending Orders</h3>
-
-            <p>
-              New customer orders will appear here.
-            </p>
-
-          </div>
-
-        `;
-
-      }
-
-
-    } catch (error) {
-
-      console.error(error);
-
-
-      alert(
-        "Unexpected error:\n\n" +
-        error.message
-      );
-
-
-      button.disabled = false;
-
-      button.innerText =
-        "✅ Mark as Completed";
-
+    function getElapsedMinutes(createdAt) {
+        if (!createdAt) return 0;
+        const diff = Date.now() - new Date(createdAt).getTime();
+        return Math.floor(diff / 60000);
     }
 
-  }
+    function formatElapsed(createdAt) {
+        if (!createdAt) return '--:--';
+        const diff = Date.now() - new Date(createdAt).getTime();
+        const totalSec = Math.floor(diff / 1000);
+        const mins = Math.floor(totalSec / 60);
+        const secs = totalSec % 60;
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
 
+    function updateTimers() {
+        document.querySelectorAll('.order-card').forEach(card => {
+            const createdAt = card.getAttribute('data-created-at');
+            const timerEl = card.querySelector('[data-timer]');
+            const textEl = card.querySelector('[data-timer-text]');
+            if (!timerEl || !textEl) return;
 
-  // ============================================================
-  // ESCAPE HTML
-  // ============================================================
+            textEl.textContent = formatElapsed(createdAt);
 
-  function escapeHTML(value) {
+            const mins = getElapsedMinutes(createdAt);
+            timerEl.classList.remove('warn', 'urgent');
+            card.classList.remove('urgent', 'critical');
 
-    return String(value)
+            if (mins >= 20) {
+                timerEl.classList.add('urgent');
+                card.classList.add('critical');
+            } else if (mins >= 15) {
+                timerEl.classList.add('warn');
+                card.classList.add('urgent');
+            }
+        });
+    }
 
-      .replace(
-        /&/g,
-        "&amp;"
-      )
+    function startTimerTick() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimers, 1000);
+    }
 
-      .replace(
-        /</g,
-        "&lt;"
-      )
+    function formatType(type) {
+        if (type === 'delivery') return '🚴 Delivery';
+        if (type === 'pickup') return '🏪 Pickup';
+        if (type === 'dinein') return '🍽️ Dine-in';
+        return type;
+    }
 
-      .replace(
-        />/g,
-        "&gt;"
-      )
+    function formatItems(items) {
+        let parsed = items;
+        try {
+            if (typeof items === "string") parsed = JSON.parse(items);
+        } catch {
+            return `<div class="item">${escapeHTML(String(items || "No items"))}</div>`;
+        }
+        if (!Array.isArray(parsed) || !parsed.length) {
+            return `<div class="item">No item information</div>`;
+        }
+        return parsed.map(item => {
+            const name = item.name || "Item";
+            const variant = item.variant || item.variantLabel || "";
+            const qty = item.quantity || item.qty || 1;
+            const price = Number(item.price || 0);
+            return `<div class="item">
+                <strong>${escapeHTML(String(name))}</strong>
+                ${variant ? ` — ${escapeHTML(String(variant))}` : ""}
+                × ${qty}
+                ${price ? `<br>Rs. ${(price * qty).toLocaleString()}` : ""}
+            </div>`;
+        }).join("");
+    }
 
-      .replace(
-        /"/g,
-        "&quot;"
-      )
+    async function completeOrder(orderId, button, card) {
+        button.disabled = true;
+        button.innerText = "Updating...";
 
-      .replace(
-        /'/g,
-        "&#039;"
-      );
+        try {
+            const { error } = await supabaseClient
+                .from("orders")
+                .update({ status: "completed" })
+                .eq("id", orderId);
 
-  }
+            if (error) {
+                alert("Failed to update order:\n\n" + error.message);
+                button.disabled = false;
+                button.innerText = "✅ Mark as Completed";
+                return;
+            }
 
+            if (card) card.remove();
+            allOrders = allOrders.filter(o => String(o.id) !== String(orderId));
 
-  // ============================================================
-  // REFRESH BUTTON
-  // ============================================================
+            if (!document.getElementById("orders").children.length) {
+                renderOrders();
+            }
+        } catch (err) {
+            alert("Unexpected error:\n\n" + err.message);
+            button.disabled = false;
+            button.innerText = "✅ Mark as Completed";
+        }
+    }
 
-  document
-    .getElementById("refreshBtn")
-    .addEventListener(
-      "click",
-      loadOrders
-    );
+    function escapeHTML(value) {
+        return String(value)
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
 
+    document.getElementById("refreshBtn").addEventListener("click", loadOrders);
 
-  // ============================================================
-  // INITIAL LOAD
-  // ============================================================
+    document.querySelectorAll(".filter-chip").forEach(chip => {
+        chip.addEventListener("click", () => {
+            document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            activeFilter = chip.dataset.filter;
+            renderOrders();
+            startTimerTick();
+        });
+    });
 
-  loadOrders();
-
-
-  // ============================================================
-  // NO AUTOMATIC REFRESH
-  // ============================================================
-
-  /*
-    There is intentionally NO setInterval() here.
-
-    Kitchen staff can use the Refresh Orders button,
-    or later we can connect Supabase Realtime so
-    new orders appear automatically.
-  */
-
+    loadOrders();
 </script>
-
 </body>
 </html>

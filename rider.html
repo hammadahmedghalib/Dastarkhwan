@@ -1,1122 +1,454 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Dastarkhwan 804 - Rider Panel</title>
-
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f5f7;
-            color: #222;
-        }
-
-        header {
-            background: #111;
-            color: white;
-            padding: 18px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        header h1 {
-            font-size: 23px;
-        }
-
-        header p {
-            color: #aaa;
-            font-size: 13px;
-            margin-top: 4px;
-        }
-
-        .refresh-btn {
-            background: white;
-            color: #111;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 7px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .refresh-btn:hover {
-            background: #ddd;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 25px;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-        }
-
-        .stat-card h3 {
-            color: #777;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .stat-card p {
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .controls {
-            background: white;
-            padding: 18px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-
-        .controls input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 7px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .controls input:focus {
-            border-color: #111;
-        }
-
-        #ordersContainer {
-            display: grid;
-            gap: 18px;
-        }
-
-        .order-card {
-            background: white;
-            border-radius: 14px;
-            padding: 20px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-        }
-
-        .order-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 15px;
-            margin-bottom: 18px;
-        }
-
-        .order-number {
-            font-size: 19px;
-            font-weight: bold;
-        }
-
-        .order-date {
-            color: #777;
-            font-size: 13px;
-            margin-top: 5px;
-        }
-
-        .status {
-            padding: 7px 13px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        .status-completed {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-out_for_delivery {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-
-        .status-delivered {
-            background: #e2e3e5;
-            color: #383d41;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 18px;
-        }
-
-        .info-box {
-            background: #f8f9fa;
-            padding: 13px;
-            border-radius: 8px;
-        }
-
-        .info-box strong {
-            display: block;
-            color: #777;
-            font-size: 12px;
-            margin-bottom: 5px;
-        }
-
-        .info-box span {
-            font-size: 14px;
-            word-break: break-word;
-        }
-
-        .items-section {
-            margin-bottom: 18px;
-        }
-
-        .items-section h3 {
-            font-size: 15px;
-            margin-bottom: 10px;
-        }
-
-        .item {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            background: #f8f9fa;
-            padding: 10px 12px;
-            margin-bottom: 6px;
-            border-radius: 7px;
-            font-size: 14px;
-        }
-
-        .item-left {
-            flex: 1;
-        }
-
-        .item-name {
-            font-weight: bold;
-        }
-
-        .item-variant {
-            color: #777;
-            font-size: 12px;
-            margin-top: 3px;
-        }
-
-        .item-right {
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
-        .total-box {
-            border-top: 1px solid #ddd;
-            padding-top: 15px;
-            margin-bottom: 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .total-box strong {
-            font-size: 18px;
-        }
-
-        .total-price {
-            font-size: 21px;
-            font-weight: bold;
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            border: none;
-            padding: 11px 16px;
-            border-radius: 7px;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: none;
-            text-align: center;
-        }
-
-        .start-btn {
-            background: #111;
-            color: white;
-        }
-
-        .delivered-btn {
-            background: #198754;
-            color: white;
-        }
-
-        .call-btn {
-            background: #eee;
-            color: #111;
-        }
-
-        .map-btn {
-            background: #eee;
-            color: #111;
-        }
-
-        .action-btn:hover {
-            opacity: 0.82;
-        }
-
-        .empty {
-            background: white;
-            padding: 50px 20px;
-            text-align: center;
-            border-radius: 12px;
-            color: #777;
-        }
-
-        .empty h2 {
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #777;
-        }
-
-        .error {
-            display: none;
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 600px) {
-
-            header {
-                padding: 15px;
-            }
-
-            header h1 {
-                font-size: 18px;
-            }
-
-            header p {
-                font-size: 11px;
-            }
-
-            .container {
-                padding: 15px;
-            }
-
-            .stats {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-
-            .stat-card {
-                padding: 15px;
-            }
-
-            .stat-card p {
-                font-size: 23px;
-            }
-
-            .order-card {
-                padding: 15px;
-            }
-
-            .order-top {
-                flex-direction: column;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .actions {
-                flex-direction: column;
-            }
-
-            .action-btn {
-                width: 100%;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dastarkhwan 804 - Rider Panel</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, Helvetica, sans-serif; background: #f4f5f7; color: #222; }
+    header { background: #111; color: white; padding: 18px 25px; display: flex; justify-content: space-between; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 100; }
+    header h1 { font-size: 23px; }
+    header p { color: #aaa; font-size: 13px; margin-top: 4px; }
+    .refresh-btn { background: white; color: #111; border: none; padding: 10px 16px; border-radius: 7px; font-weight: bold; cursor: pointer; }
+    .refresh-btn:hover { background: #ddd; }
+    .container { max-width: 1200px; margin: auto; padding: 25px; }
+    .notice { background: #e3f2fd; color: #0d47a1; border: 1px solid #90caf9; padding: 14px 18px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; display: flex; gap: 10px; align-items: center; }
+    .notice i { font-size: 20px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+    .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+    .stat-card h3 { color: #777; font-size: 14px; margin-bottom: 8px; }
+    .stat-card p { font-size: 28px; font-weight: bold; }
+    .stat-card.live { border-top: 4px solid #198754; }
+    #ordersContainer { display: grid; gap: 18px; }
+    .order-card { background: white; border-radius: 14px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    .order-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; margin-bottom: 18px; }
+    .order-number { font-size: 19px; font-weight: bold; }
+    .order-date { color: #777; font-size: 13px; margin-top: 5px; }
+    .status { padding: 7px 13px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; white-space: nowrap; }
+    .status-completed { background: #fff3cd; color: #856404; }
+    .status-out_for_delivery { background: #d1ecf1; color: #0c5460; }
+    .status-delivered { background: #e2e3e5; color: #383d41; }
+    .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 18px; }
+    .info-box { background: #f8f9fa; padding: 13px; border-radius: 8px; }
+    .info-box strong { display: block; color: #777; font-size: 12px; margin-bottom: 5px; }
+    .info-box span { font-size: 14px; word-break: break-word; }
+    .items-section { margin-bottom: 18px; }
+    .items-section h3 { font-size: 15px; margin-bottom: 10px; }
+    .item { display: flex; justify-content: space-between; gap: 10px; background: #f8f9fa; padding: 10px 12px; margin-bottom: 6px; border-radius: 7px; font-size: 14px; }
+    .item-name { font-weight: bold; }
+    .item-variant { color: #777; font-size: 12px; margin-top: 3px; }
+    .item-right { font-weight: bold; white-space: nowrap; }
+    .total-box { border-top: 1px solid #ddd; padding-top: 15px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
+    .total-box strong { font-size: 18px; }
+    .total-price { font-size: 21px; font-weight: bold; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .action-btn { border: none; padding: 11px 16px; border-radius: 7px; cursor: pointer; font-weight: bold; text-decoration: none; text-align: center; }
+    .start-btn { background: #111; color: white; }
+    .delivered-btn { background: #198754; color: white; }
+    .call-btn { background: #eee; color: #111; }
+    .map-btn { background: #eee; color: #111; }
+    .track-btn { background: linear-gradient(135deg, #2196f3, #1565c0); color: white; }
+    .action-btn:hover { opacity: 0.82; }
+    .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .tracking-active { background: linear-gradient(135deg, #198754, #0d5f3d) !important; position: relative; }
+    .tracking-active::after { content: ''; position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: #ffeb3b; animation: blink 1s infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .empty { background: white; padding: 50px 20px; text-align: center; border-radius: 12px; color: #777; }
+    .empty h2 { color: #333; margin-bottom: 8px; }
+    .loading { text-align: center; padding: 40px; color: #777; }
+    .error { display: none; background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .gps-banner { background: linear-gradient(135deg, #198754, #0d5f3d); color: white; padding: 12px 18px; border-radius: 10px; margin-bottom: 18px; display: none; align-items: center; gap: 12px; font-size: 14px; }
+    .gps-banner.active { display: flex; }
+    .gps-banner i { font-size: 20px; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+    @media (max-width: 600px) {
+        header { padding: 15px; }
+        header h1 { font-size: 17px; }
+        .container { padding: 15px; }
+        .stats { grid-template-columns: 1fr; }
+        .order-top { flex-direction: column; }
+        .info-grid { grid-template-columns: 1fr; }
+        .actions { flex-direction: column; }
+        .action-btn { width: 100%; }
+    }
+</style>
 </head>
-
 <body>
 
 <header>
-
     <div>
         <h1>🚴 Dastarkhwan 804</h1>
-        <p>Rider Delivery Panel</p>
+        <p>Rider Panel · Live GPS Tracking</p>
     </div>
-
-    <button class="refresh-btn" onclick="loadOrders()">
-        🔄 Refresh
-    </button>
-
+    <button class="refresh-btn" onclick="loadOrders()">🔄 Refresh</button>
 </header>
 
 <div class="container">
 
-    <div class="stats">
+    <div class="notice">
+        <i>ℹ️</i>
+        <div><strong>Delivery orders only.</strong> Tap <b>"Start Delivery + Share Location"</b> to begin tracking — the customer will see your live position.</div>
+    </div>
 
+    <div id="gpsBanner" class="gps-banner">
+        <i class="fas fa-satellite-dish"></i>
+        <div><strong>GPS Tracking Active</strong> — Sharing your location with the customer every 15 seconds.</div>
+    </div>
+
+    <div class="stats">
         <div class="stat-card">
             <h3>Ready for Delivery</h3>
             <p id="readyCount">0</p>
         </div>
-
         <div class="stat-card">
             <h3>Out for Delivery</h3>
             <p id="deliveryCount">0</p>
         </div>
-
+        <div class="stat-card live">
+            <h3>Live Tracking</h3>
+            <p id="trackingCount">0</p>
+        </div>
     </div>
 
     <div id="errorBox" class="error"></div>
 
-    <div class="controls">
-
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="Search customer, phone or location..."
-            oninput="renderOrders"
-        >
-
-    </div>
-
     <div id="ordersContainer">
-
-        <div class="loading">
-            Loading delivery orders...
-        </div>
-
+        <div class="loading">Loading delivery orders...</div>
     </div>
 
 </div>
 
 <script>
+    const SUPABASE_URL = "https://zghtapcdtldnfthfdfjw.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_HB5cqP48gvhK9uxIyIVMUA_MT2B1CJN";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ============================================================
-    // SUPABASE SETUP
-    // ============================================================
-
-    const SUPABASE_URL =
-        "https://zghtapcdtldnfthfdfjw.supabase.co";
-
-    const SUPABASE_ANON_KEY =
-        "sb_publishable_HB5cqP48gvhK9uxIyIVMUA_MT2B1CJN";
-
-    const supabaseClient =
-        supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_ANON_KEY
-        );
-
-
-    // ============================================================
-    // DATA
-    // ============================================================
+    const GPS_INTERVAL_MS = 15000; // 15 seconds
 
     let allOrders = [];
-
-
-    // ============================================================
-    // LOAD ORDERS
-    // ============================================================
+    let activeTrackers = {}; // { orderId: intervalId }
+    let activeWatchIds = {}; // { orderId: watchId }
 
     async function loadOrders() {
-
-        const container =
-            document.getElementById("ordersContainer");
-
-        const errorBox =
-            document.getElementById("errorBox");
-
+        const container = document.getElementById("ordersContainer");
+        const errorBox = document.getElementById("errorBox");
         errorBox.style.display = "none";
-
-        container.innerHTML = `
-            <div class="loading">
-                Loading delivery orders...
-            </div>
-        `;
+        container.innerHTML = `<div class="loading">Loading delivery orders...</div>`;
 
         try {
-
-            const { data, error } =
-                await supabaseClient
-                    .from("orders")
-                    .select("*")
-                    .in("status", [
-                        "completed",
-                        "out_for_delivery"
-                    ])
-                    .order("created_at", {
-                        ascending: true
-                    });
+            const { data, error } = await supabaseClient
+                .from("orders")
+                .select("*")
+                .in("status", ["completed", "out_for_delivery"])
+                .eq("order_type", "delivery")
+                .order("created_at", { ascending: true });
 
             if (error) {
-
-                console.error(
-                    "Supabase Error:",
-                    error
-                );
-
-                errorBox.innerText =
-                    "Unable to load orders: " +
-                    error.message;
-
+                errorBox.innerText = "Unable to load orders: " + error.message;
                 errorBox.style.display = "block";
-
                 container.innerHTML = "";
-
                 return;
             }
 
             allOrders = data || [];
-
             updateStats();
-
             renderOrders();
 
-        } catch (error) {
-
-            console.error(error);
-
-            errorBox.innerText =
-                "Unexpected error: " +
-                error.message;
-
+        } catch (err) {
+            errorBox.innerText = "Unexpected error: " + err.message;
             errorBox.style.display = "block";
-
             container.innerHTML = "";
         }
     }
 
-
-    // ============================================================
-    // UPDATE STATS
-    // ============================================================
-
     function updateStats() {
+        const ready = allOrders.filter(o => o.status === "completed").length;
+        const out = allOrders.filter(o => o.status === "out_for_delivery").length;
+        document.getElementById("readyCount").innerText = ready;
+        document.getElementById("deliveryCount").innerText = out;
+        document.getElementById("trackingCount").innerText = Object.keys(activeTrackers).length;
 
-        const ready =
-            allOrders.filter(
-                order =>
-                    order.status === "completed"
-            ).length;
-
-        const outForDelivery =
-            allOrders.filter(
-                order =>
-                    order.status === "out_for_delivery"
-            ).length;
-
-        document.getElementById(
-            "readyCount"
-        ).innerText = ready;
-
-        document.getElementById(
-            "deliveryCount"
-        ).innerText = outForDelivery;
+        // Show/hide GPS banner
+        const banner = document.getElementById("gpsBanner");
+        if (Object.keys(activeTrackers).length > 0) {
+            banner.classList.add("active");
+        } else {
+            banner.classList.remove("active");
+        }
     }
 
-
-    // ============================================================
-    // RENDER ORDERS
-    // ============================================================
-
     function renderOrders() {
+        const container = document.getElementById("ordersContainer");
 
-        const container =
-            document.getElementById(
-                "ordersContainer"
-            );
-
-        const search =
-            document.getElementById(
-                "searchInput"
-            )
-            .value
-            .toLowerCase()
-            .trim();
-
-        const filteredOrders =
-            allOrders.filter(order => {
-
-                if (!search) {
-                    return true;
-                }
-
-                const searchableText = [
-
-                    order.customer_name,
-                    order.customer_phone,
-                    order.customer_location,
-                    order.order_note,
-                    order.delivery_time,
-                    order.status
-
-                ]
-                .filter(Boolean)
-                .join(" ")
-                .toLowerCase();
-
-                return searchableText.includes(
-                    search
-                );
-            });
-
-        if (filteredOrders.length === 0) {
-
-            container.innerHTML = `
-                <div class="empty">
-
-                    <h2>📦 No Delivery Orders</h2>
-
-                    <p>
-                        There are currently no orders
-                        ready for delivery.
-                    </p>
-
-                </div>
-            `;
-
+        if (!allOrders.length) {
+            container.innerHTML = `<div class="empty"><h2>📦 No Delivery Orders</h2><p>There are currently no delivery orders.</p></div>`;
             return;
         }
 
-        container.innerHTML =
-            filteredOrders
-                .map(order =>
-                    createOrderCard(order)
-                )
-                .join("");
+        container.innerHTML = allOrders.map(order => createOrderCard(order)).join("");
+
+        // Re-attach tracking state after render
+        allOrders.forEach(order => {
+            if (activeTrackers[order.id]) {
+                const btn = document.querySelector(`[data-track-btn="${order.id}"]`);
+                if (btn) {
+                    btn.classList.add("tracking-active");
+                    btn.innerHTML = "📍 Tracking Active";
+                }
+            }
+        });
     }
 
-
-    // ============================================================
-    // CREATE ORDER CARD
-    // ============================================================
-
     function createOrderCard(order) {
-
-        const status =
-            order.status || "completed";
-
-        const statusClass =
-            "status-" +
-            status
-                .toLowerCase()
-                .replace(/ /g, "_");
-
-        const createdAt =
-            order.created_at
-                ? formatDate(order.created_at)
-                : "Unknown";
-
-        const customerName =
-            order.customer_name ||
-            "Customer";
-
-        const phone =
-            order.customer_phone ||
-            "Not provided";
-
-        const location =
-            order.customer_location ||
-            "Not provided";
-
-        const deliveryTime =
-            order.delivery_time ||
-            "Not specified";
-
-        const note =
-            order.order_note ||
-            "No special instructions";
-
-        const total =
-            Number(
-                order.total_amount || 0
-            );
-
-        const itemsHTML =
-            formatItems(order.items);
+        const status = order.status || "completed";
+        const statusClass = "status-" + status.toLowerCase().replace(/ /g, "_");
+        const createdAt = order.created_at ? formatDate(order.created_at) : "Unknown";
+        const customerName = order.customer_name || "Customer";
+        const phone = order.customer_phone || "Not provided";
+        const location = order.customer_location || "Not provided";
+        const deliveryTime = order.delivery_time || "Not specified";
+        const note = order.order_note || "No special instructions";
+        const total = Number(order.total_amount || 0);
+        const itemsHTML = formatItems(order.items);
+        const isTracking = !!activeTrackers[order.id];
 
         let actionHTML = "";
-
         if (status === "completed") {
-
             actionHTML = `
-
-                <button
-                    class="action-btn start-btn"
-                    onclick="startDelivery('${escapeAttribute(String(order.id))}')"
-                >
-                    🚴 Start Delivery
+                <button class="action-btn start-btn" onclick="startDelivery('${escapeAttr(String(order.id))}')">
+                    🚴 Start Delivery + Share Location
                 </button>
-
             `;
-        }
-
-        if (status === "out_for_delivery") {
-
+        } else if (status === "out_for_delivery") {
             actionHTML = `
-
                 <button
-                    class="action-btn delivered-btn"
-                    onclick="markDelivered('${escapeAttribute(String(order.id))}')"
-                >
+                    class="action-btn track-btn ${isTracking ? 'tracking-active' : ''}"
+                    data-track-btn="${escapeAttr(String(order.id))}"
+                    onclick="toggleTracking('${escapeAttr(String(order.id))}')">
+                    ${isTracking ? '📍 Tracking Active' : '📍 Start Live Tracking'}
+                </button>
+                <button class="action-btn delivered-btn" onclick="markDelivered('${escapeAttr(String(order.id))}')">
                     ✅ Mark as Delivered
                 </button>
-
             `;
         }
 
         return `
-
-            <div class="order-card">
-
+            <div class="order-card" data-order-id="${escapeAttr(String(order.id))}">
                 <div class="order-top">
-
                     <div>
-
-                        <div class="order-number">
-                            Order #${escapeHTML(
-                                String(order.id || "N/A")
-                            )}
-                        </div>
-
-                        <div class="order-date">
-                            ${escapeHTML(createdAt)}
-                        </div>
-
+                        <div class="order-number">Order #${escapeHTML(String(order.id || "N/A"))}</div>
+                        <div class="order-date">${escapeHTML(createdAt)}</div>
                     </div>
-
-                    <span class="status ${statusClass}">
-                        ${escapeHTML(
-                            formatStatus(status)
-                        )}
-                    </span>
-
+                    <span class="status ${statusClass}">${escapeHTML(formatStatus(status))}</span>
                 </div>
 
                 <div class="info-grid">
-
-                    <div class="info-box">
-                        <strong>Customer</strong>
-                        <span>
-                            ${escapeHTML(customerName)}
-                        </span>
-                    </div>
-
-                    <div class="info-box">
-                        <strong>Phone</strong>
-                        <span>
-                            ${escapeHTML(phone)}
-                        </span>
-                    </div>
-
-                    <div class="info-box">
-                        <strong>Delivery Location</strong>
-                        <span>
-                            ${escapeHTML(location)}
-                        </span>
-                    </div>
-
-                    <div class="info-box">
-                        <strong>Delivery Time</strong>
-                        <span>
-                            ${escapeHTML(deliveryTime)}
-                        </span>
-                    </div>
-
+                    <div class="info-box"><strong>Customer</strong><span>${escapeHTML(customerName)}</span></div>
+                    <div class="info-box"><strong>Phone</strong><span>${escapeHTML(phone)}</span></div>
+                    <div class="info-box"><strong>Delivery Location</strong><span>${escapeHTML(location)}</span></div>
+                    <div class="info-box"><strong>Delivery Time</strong><span>${escapeHTML(deliveryTime)}</span></div>
                 </div>
 
                 <div class="items-section">
-
                     <h3>🛒 Ordered Items</h3>
-
                     ${itemsHTML}
-
                 </div>
 
-                <div
-                    class="info-box"
-                    style="margin-bottom:18px;"
-                >
-
+                <div class="info-box" style="margin-bottom:18px;">
                     <strong>Order Note</strong>
-
-                    <span>
-                        ${escapeHTML(note)}
-                    </span>
-
+                    <span>${escapeHTML(note)}</span>
                 </div>
 
                 <div class="total-box">
-
                     <strong>Total</strong>
-
-                    <span class="total-price">
-                        Rs. ${total.toLocaleString()}
-                    </span>
-
+                    <span class="total-price">Rs. ${total.toLocaleString()}</span>
                 </div>
 
                 <div class="actions">
-
                     ${actionHTML}
-
-                    <a
-                        class="action-btn call-btn"
-                        href="tel:${escapeAttribute(phone)}"
-                    >
-                        📞 Call Customer
-                    </a>
-
-                    <a
-                        class="action-btn map-btn"
-                        href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        📍 Open Location
-                    </a>
-
+                    <a class="action-btn call-btn" href="tel:${escapeAttr(phone)}">📞 Call</a>
+                    <a class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}" target="_blank" rel="noopener noreferrer">📍 Destination</a>
                 </div>
-
             </div>
-
         `;
     }
 
-
-    // ============================================================
-    // START DELIVERY
-    // NO CONFIRMATION POPUP
-    // ============================================================
-
     async function startDelivery(orderId) {
-
         try {
+            const { error } = await supabaseClient
+                .from("orders")
+                .update({ status: "out_for_delivery" })
+                .eq("id", orderId);
 
-            const { error } =
-                await supabaseClient
-                    .from("orders")
-                    .update({
-                        status: "out_for_delivery"
-                    })
-                    .eq("id", orderId);
+            if (error) { alert("Failed to start delivery:\n" + error.message); return; }
 
-            if (error) {
-
-                console.error(
-                    "Start Delivery Error:",
-                    error
-                );
-
-                alert(
-                    "Failed to start delivery:\n" +
-                    error.message
-                );
-
-                return;
-            }
-
-            alert(
-                "🚴 Delivery started!"
-            );
+            // Auto-start GPS tracking
+            startTracking(orderId);
 
             loadOrders();
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert(
-                "Unexpected error:\n" +
-                error.message
-            );
-        }
+        } catch (err) { alert("Unexpected error:\n" + err.message); }
     }
-
-
-    // ============================================================
-    // MARK DELIVERED
-    // NO CONFIRMATION POPUP
-    // ============================================================
 
     async function markDelivered(orderId) {
+        // Stop tracking first
+        stopTracking(orderId);
 
         try {
+            const { error } = await supabaseClient
+                .from("orders")
+                .update({ status: "delivered" })
+                .eq("id", orderId);
 
-            const { error } =
-                await supabaseClient
-                    .from("orders")
-                    .update({
-                        status: "delivered"
-                    })
-                    .eq("id", orderId);
+            if (error) { alert("Failed to mark as delivered:\n" + error.message); return; }
+            loadOrders();
+        } catch (err) { alert("Unexpected error:\n" + err.message); }
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // FEATURE 18 — GPS LIVE TRACKING
+    // ─────────────────────────────────────────────────────────
+
+    function toggleTracking(orderId) {
+        if (activeTrackers[orderId]) {
+            stopTracking(orderId);
+        } else {
+            startTracking(orderId);
+        }
+    }
+
+    function startTracking(orderId) {
+        if (activeTrackers[orderId]) return;
+        if (!navigator.geolocation) {
+            alert("Your browser does not support GPS location. Please use a modern browser.");
+            return;
+        }
+
+        // Request permission first via a single getCurrentPosition
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                // Permission granted — post first location and start interval
+                postLocation(orderId, pos);
+                activeTrackers[orderId] = setInterval(() => {
+                    navigator.geolocation.getCurrentPosition(
+                        (p) => postLocation(orderId, p),
+                        (err) => console.warn("GPS update failed:", err.message),
+                        { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
+                    );
+                }, GPS_INTERVAL_MS);
+
+                // Update the button
+                const btn = document.querySelector(`[data-track-btn="${orderId}"]`);
+                if (btn) {
+                    btn.classList.add("tracking-active");
+                    btn.innerHTML = "📍 Tracking Active";
+                }
+                updateStats();
+                alert("✅ Live tracking started!\n\nThe customer can now see your location.");
+            },
+            (err) => {
+                alert("❌ Location permission denied or unavailable.\n\nError: " + err.message + "\n\nPlease enable location access in your browser settings.");
+            },
+            { enableHighAccuracy: true, timeout: 15000 }
+        );
+    }
+
+    function stopTracking(orderId) {
+        if (activeTrackers[orderId]) {
+            clearInterval(activeTrackers[orderId]);
+            delete activeTrackers[orderId];
+        }
+        if (activeWatchIds[orderId]) {
+            navigator.geolocation.clearWatch(activeWatchIds[orderId]);
+            delete activeWatchIds[orderId];
+        }
+
+        const btn = document.querySelector(`[data-track-btn="${orderId}"]`);
+        if (btn) {
+            btn.classList.remove("tracking-active");
+            btn.innerHTML = "📍 Start Live Tracking";
+        }
+        updateStats();
+    }
+
+    async function postLocation(orderId, position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const accuracy = position.coords.accuracy || null;
+
+        try {
+            // Upsert (insert or update)
+            const { error } = await supabaseClient
+                .from("order_locations")
+                .upsert({
+                    order_id: orderId,
+                    latitude: lat,
+                    longitude: lng,
+                    accuracy: accuracy,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'order_id' });
 
             if (error) {
-
-                console.error(
-                    "Delivered Error:",
-                    error
-                );
-
-                alert(
-                    "Failed to mark order as delivered:\n" +
-                    error.message
-                );
-
-                return;
+                console.warn("Failed to post location:", error.message);
+            } else {
+                console.log(`📍 Location updated for order ${orderId}: ${lat}, ${lng}`);
             }
-
-            alert(
-                "✅ Order marked as delivered!"
-            );
-
-            loadOrders();
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert(
-                "Unexpected error:\n" +
-                error.message
-            );
+        } catch (err) {
+            console.warn("Location post error:", err);
         }
     }
 
-
-    // ============================================================
-    // FORMAT ITEMS
-    // ============================================================
+    // ─────────────────────────────────────────────────────────
 
     function formatItems(items) {
+        let parsed = items;
+        try { if (typeof items === "string") parsed = JSON.parse(items); }
+        catch { return `<div class="item"><div class="item-name">${escapeHTML(String(items || "No items"))}</div></div>`; }
 
-        let parsedItems = items;
-
-        try {
-
-            if (typeof items === "string") {
-
-                parsedItems =
-                    JSON.parse(items);
-            }
-
-        } catch (error) {
-
-            return `
-                <div class="item">
-
-                    <div class="item-left">
-                        ${escapeHTML(
-                            String(
-                                items ||
-                                "No items"
-                            )
-                        )}
-                    </div>
-
-                </div>
-            `;
+        if (!Array.isArray(parsed) || !parsed.length) {
+            return `<div class="item"><div class="item-name">No item information</div></div>`;
         }
-
-        if (
-            !Array.isArray(parsedItems) ||
-            parsedItems.length === 0
-        ) {
-
-            return `
-                <div class="item">
-
-                    <div class="item-left">
-                        No item information
-                    </div>
-
+        return parsed.map(item => {
+            const name = item.name || item.title || "Item";
+            const variant = item.variant || item.variantLabel || item.size || "";
+            const qty = Number(item.quantity || item.qty || 1);
+            const price = Number(item.price || 0);
+            const total = price * qty;
+            return `<div class="item">
+                <div>
+                    <div class="item-name">${escapeHTML(String(name))} × ${qty}</div>
+                    ${variant ? `<div class="item-variant">${escapeHTML(String(variant))}</div>` : ""}
                 </div>
-            `;
-        }
-
-        return parsedItems
-            .map(item => {
-
-                const name =
-                    item.name ||
-                    item.title ||
-                    "Item";
-
-                const variant =
-                    item.variant ||
-                    item.size ||
-                    "";
-
-                const quantity =
-                    Number(
-                        item.quantity || 1
-                    );
-
-                const price =
-                    Number(
-                        item.price || 0
-                    );
-
-                const itemTotal =
-                    price * quantity;
-
-                return `
-
-                    <div class="item">
-
-                        <div class="item-left">
-
-                            <div class="item-name">
-
-                                ${escapeHTML(
-                                    String(name)
-                                )}
-
-                                × ${quantity}
-
-                            </div>
-
-                            ${
-                                variant
-                                ? `
-                                    <div class="item-variant">
-                                        ${escapeHTML(
-                                            String(variant)
-                                        )}
-                                    </div>
-                                `
-                                : ""
-                            }
-
-                        </div>
-
-                        <div class="item-right">
-
-                            Rs.
-                            ${itemTotal.toLocaleString()}
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            })
-            .join("");
+                <div class="item-right">Rs. ${total.toLocaleString()}</div>
+            </div>`;
+        }).join("");
     }
-
-
-    // ============================================================
-    // FORMAT STATUS
-    // ============================================================
 
     function formatStatus(status) {
-
-        if (!status) {
-            return "Completed";
-        }
-
-        return status
-            .replace(/_/g, " ")
-            .replace(
-                /\b\w/g,
-                letter =>
-                    letter.toUpperCase()
-            );
+        if (!status) return "Completed";
+        return status.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
     }
-
-
-    // ============================================================
-    // FORMAT DATE
-    // ============================================================
 
     function formatDate(dateString) {
-
-        try {
-
-            const date =
-                new Date(dateString);
-
-            return date.toLocaleString(
-                "en-PK",
-                {
-                    dateStyle: "medium",
-                    timeStyle: "short"
-                }
-            );
-
-        } catch (error) {
-
-            return dateString;
-        }
+        try { return new Date(dateString).toLocaleString("en-PK", { dateStyle: "medium", timeStyle: "short" }); }
+        catch { return dateString; }
     }
-
-
-    // ============================================================
-    // SECURITY
-    // ============================================================
 
     function escapeHTML(value) {
-
-        return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+        return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-
-    function escapeAttribute(value) {
-
-        return String(value)
-            .replace(/'/g, "\\'")
-            .replace(/"/g, "&quot;");
+    function escapeAttr(value) {
+        return String(value).replace(/'/g, "\\'").replace(/"/g, "&quot;");
     }
-
-
-    // ============================================================
-    // INITIAL LOAD
-    // ============================================================
 
     loadOrders();
 
+    // Auto-refresh every 60 seconds
+    setInterval(loadOrders, 60000);
 </script>
-
 </body>
 </html>

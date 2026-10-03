@@ -3,31 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
 <title>Dastarkhwan 804 | Pakistani Restaurant in Rawalpindi</title>
-
-<meta name="description"
-    content="Visit Dastarkhwan 804 on Main Khanna Road, Rawalpindi, for authentic Pakistani cuisine including karahi, BBQ, handi, biryani, naan and traditional desi dishes." />
-
+<meta name="description" content="Visit Dastarkhwan 804 on Main Khanna Road, Rawalpindi, for authentic Pakistani cuisine including karahi, BBQ, handi, biryani, naan and traditional desi dishes." />
 <meta name="robots" content="index, follow" />
 <meta name="author" content="Dastarkhwan 804" />
-
-<link rel="canonical"
-    href="https://hammadahmedghalib.github.io/Dastarkhwan/" />
-
-<!-- Open Graph SEO -->
+<link rel="canonical" href="https://hammadahmedghalib.github.io/Dastarkhwan/" />
 <meta property="og:type" content="website" />
-<meta property="og:title"
-    content="Dastarkhwan 804 | Pakistani Restaurant in Rawalpindi" />
-<meta property="og:description"
-    content="Authentic Pakistani and desi cuisine at Dastarkhwan 804, Main Khanna Road, Rawalpindi." />
-<meta property="og:url"
-    content="https://hammadahmedghalib.github.io/Dastarkhwan/" />
+<meta property="og:title" content="Dastarkhwan 804 | Pakistani Restaurant in Rawalpindi" />
+<meta property="og:description" content="Authentic Pakistani and desi cuisine at Dastarkhwan 804, Main Khanna Road, Rawalpindi." />
+<meta property="og:url" content="https://hammadahmedghalib.github.io/Dastarkhwan/" />
 <meta property="og:site_name" content="Dastarkhwan 804" />
-<meta property="og:image"
-    content="https://i.ytimg.com/vi/XbsXpvfHFJU/maxresdefault.jpg" />
+<meta property="og:image" content="https://i.ytimg.com/vi/XbsXpvfHFJU/maxresdefault.jpg" />
 
-<!-- Restaurant Schema -->
 <script type="application/ld+json">
 {
     "@context": "https://schema.org",
@@ -37,17 +24,9 @@
     "url": "https://hammadahmedghalib.github.io/Dastarkhwan/",
     "telephone": "+923359635567",
     "priceRange": "PKR",
-    "servesCuisine": [
-        "Pakistani",
-        "Desi",
-        "BBQ",
-        "Karahi"
-    ],
+    "servesCuisine": ["Pakistani", "Desi", "BBQ", "Karahi"],
     "menu": "https://hammadahmedghalib.github.io/Dastarkhwan/#menu",
-    "areaServed": {
-        "@type": "City",
-        "name": "Rawalpindi"
-    },
+    "areaServed": { "@type": "City", "name": "Rawalpindi" },
     "address": {
         "@type": "PostalAddress",
         "streetAddress": "Main Khanna Road",
@@ -56,1271 +35,588 @@
         "addressCountry": "PK"
     },
     "openingHoursSpecification": [
-        {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday"
-            ],
-            "opens": "11:00",
-            "closes": "00:00"
-        },
-        {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": [
-                "Friday",
-                "Saturday",
-                "Sunday"
-            ],
-            "opens": "11:00",
-            "closes": "03:00"
-        }
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday"], "opens": "11:00", "closes": "00:00" },
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Friday","Saturday","Sunday"], "opens": "11:00", "closes": "03:00" }
     ]
 }
 </script>
 
-<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+<link rel="preconnect" href="https://esm.sh" crossorigin />
+<link rel="preconnect" href="https://zghtapcdtldnfthfdfjw.supabase.co" crossorigin />
+<link rel="preconnect" href="https://i.ytimg.com" crossorigin />
 
-<link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap"
-    rel="stylesheet" />
+<link rel="preload" as="image" href="https://i.ytimg.com/vi/XbsXpvfHFJU/maxresdefault.jpg" fetchpriority="high" />
 
-<!-- Font Awesome 6 -->
-<link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet" />
 
-<!-- Custom CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'" />
+<noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</noscript>
+
 <link rel="stylesheet" href="style.css" />
-
 </head>
 
 <body>
 
+<!-- Feature 2: Notification permission banner -->
+<!-- Feature 2: Notification permission banner -->
+<div class="notif-banner" id="notifBanner" hidden>
+    <div class="notif-banner-content">
+        <div class="notif-banner-icon" id="notifBannerIcon"><i class="fas fa-bell"></i></div>
+        <div class="notif-banner-text">
+            <strong id="notifBannerTitle">Get live order updates?</strong>
+            <span id="notifBannerMsg">We'll notify you when your order is being prepared & delivered.</span>
+        </div>
+    </div>
+    <div class="notif-banner-actions" id="notifBannerActions">
+        <button class="notif-allow-btn" id="notifAllowBtn">Enable</button>
+        <button class="notif-dismiss-btn" id="notifDismissBtn" aria-label="Dismiss"><i class="fas fa-times"></i></button>
+    </div>
+</div>
+
+<!-- ========== PRELOADER ========== -->
+<div class="preloader" id="preloader">
+    <div class="preloader-mark"><i class="fas fa-utensil-spoon"></i></div>
+    <span class="preloader-ring"></span>
+    <p>Dastarkhwan <span>804</span></p>
+</div>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
 <!-- ========== NAVIGATION ========== -->
-<nav>
+<nav id="mainNav">
     <div class="container nav-wrapper">
 
         <div class="logo">
-            <i class="fas fa-utensil-spoon" style="color:#b8860b;"></i>
+            <i class="fas fa-utensil-spoon"></i>
             Dastarkhwan <span>804</span>
         </div>
 
-        <ul class="nav-links">
-
-            <li>
-                <a href="#menu">Menu</a>
-            </li>
-
-            <li>
-                <a href="#about">About</a>
-            </li>
-
-            <li>
-                <a href="#contact">Contact</a>
-            </li>
-
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
         </ul>
 
-        <div class="nav-cart" id="cartToggle">
+        <div class="nav-actions">
 
-            <i class="fas fa-shopping-cart"></i>
+            <!-- ⬅️ Feature 18: Track Order button -->
+            <button class="nav-icon-btn" id="trackOrderBtn" title="Track Order" aria-label="Track Order">
+                <i class="fas fa-truck-fast"></i>
+            </button>
 
-            <span class="cart-badge" id="cartCount">
-                0
-            </span>
+            <a href="tel:+923359635567" class="nav-phone">
+                <i class="fas fa-phone-alt"></i>
+                <span>+92 335 9635567</span>
+            </a>
+
+            <button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+
+            <div class="nav-cart" id="cartToggle">
+                <i class="fas fa-shopping-bag"></i>
+                <span class="cart-badge" id="cartCount">0</span>
+            </div>
 
         </div>
-
     </div>
 </nav>
 
-
-<!-- ========== PROFESSIONAL HERO SECTION ========== -->
+<!-- ========== HERO SECTION ========== -->
 <section class="hero-pro" id="hero">
-
     <div class="hero-pro-bg"></div>
+    <div class="hero-pro-grain"></div>
+    <div class="hero-pro-glow glow-1"></div>
+    <div class="hero-pro-glow glow-2"></div>
+    <div class="hero-pro-glow glow-3"></div>
 
     <div class="hero-pro-container">
-
-        <!-- Left: Content -->
         <div class="hero-pro-content">
-
             <span class="hero-pro-badge">
-                <i class="fas fa-fire"></i>
-                Authentic Desi Taste
+                <span class="badge-dot"></span>
+                Now Serving · Open Until 3 AM
             </span>
-
             <h1 class="hero-pro-title">
-
-                Dastarkhwan 804
-
-                <span class="highlight">
-                    Restaurant
-                </span>
-
-                in Rawalpindi
-
+                Dastarkhwan
+                <span class="title-accent">804</span>
+                <span class="title-line">Authentic Pakistani</span>
+                <span class="title-script">Flavours.</span>
             </h1>
-
             <p class="hero-pro-desc">
-
-                Dastarkhwan 804 is a Pakistani restaurant on Main Khanna Road,
-                Rawalpindi, serving authentic karahi, BBQ, handi, biryani and
-                traditional desi cuisine.
-
+                A Pakistani restaurant on Main Khanna Road, Rawalpindi —
+                serving sizzling karahi, smoky BBQ, rich handi and aromatic
+                biryani, all made fresh with traditional recipes.
             </p>
-
-            <p class="hero-pro-desc">
-
-                Enjoy freshly cooked karahi, smoky BBQ, flavorful handi, biryani
-                and traditional Pakistani dishes made for every occasion.
-
-            </p>
-
             <div class="hero-pro-buttons">
-
                 <a href="#menu" class="btn-primary pulse">
-
-                    <i class="fas fa-utensils"></i>
-
-                    Order Now
-
+                    <i class="fas fa-utensils"></i> Order Now
                 </a>
-
-                <a href="#about" class="btn-secondary-outline">
-
-                    About Us!
-
+                <a href="#about" class="btn-ghost">
+                    <i class="fas fa-play-circle"></i> Our Story
                 </a>
-
             </div>
-
-
-            <!-- Stats -->
-            <div class="hero-pro-stats">
-
-                <div class="stat-item">
-
-                    <span
-                        class="stat-number"
-                        data-target="500">
-                        0
-                    </span>
-
-                    <span class="stat-label">
-                        Orders Today
-                    </span>
-
+            <div class="hero-trust">
+                <div class="trust-avatars">
+                    <span style="background-image:url('https://i.pravatar.cc/80?img=12')"></span>
+                    <span style="background-image:url('https://i.pravatar.cc/80?img=32')"></span>
+                    <span style="background-image:url('https://i.pravatar.cc/80?img=45')"></span>
+                    <span style="background-image:url('https://i.pravatar.cc/80?img=68')"></span>
+                    <span class="trust-more">+2k</span>
                 </div>
-
-                <div class="stat-divider"></div>
-
-                <div class="stat-item">
-
-                    <span class="stat-number">
-                        4.9
-                    </span>
-
-                    <span class="stat-label">
-                        ★ Rating
-                    </span>
-
+                <div class="trust-text">
+                    <div class="trust-stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>Loved by <strong>2,400+</strong> happy customers</p>
                 </div>
-
-                <div class="stat-divider"></div>
-
-                <div class="stat-item">
-
-                    <span class="stat-number">
-                        30
-                    </span>
-
-                    <span class="stat-label">
-                        Min Delivery
-                    </span>
-
-                </div>
-
             </div>
-
         </div>
 
-
-        <!-- Right: Floating Food Image -->
         <div class="hero-pro-image">
-
+            <div class="hero-image-ring"></div>
             <div class="hero-pro-floating">
-
-                <img
-                    src="https://i.ytimg.com/vi/XbsXpvfHFJU/maxresdefault.jpg"
+                <img src="https://i.ytimg.com/vi/XbsXpvfHFJU/maxresdefault.jpg"
                     alt="Dastarkhwan 804 authentic Pakistani karahi in Rawalpindi"
-                />
-
+                    loading="eager" fetchpriority="high" decoding="async" width="500" height="500" />
             </div>
-
-            <div class="hero-pro-float-card">
-
-                <i
-                    class="fas fa-star"
-                    style="color:#fbbf24;">
-                </i>
-
-                Best Karahi in Town
-
+            <div class="hero-pro-float-card card-1">
+                <div class="float-icon gold"><i class="fas fa-fire"></i></div>
+                <div><strong>Best Karahi</strong><small>in Rawalpindi</small></div>
             </div>
-
-            <div class="hero-pro-float-card second">
-
-                <i class="fas fa-clock"></i>
-
-                Freshly Cooked
-
+            <div class="hero-pro-float-card card-2">
+                <div class="float-icon green"><i class="fas fa-clock"></i></div>
+                <div><strong>30 Min</strong><small>Fast delivery</small></div>
             </div>
-
+            <div class="hero-pro-float-card card-3">
+                <div class="float-icon sienna"><i class="fas fa-award"></i></div>
+                <div><strong>100% Fresh</strong><small>Made to order</small></div>
+            </div>
         </div>
-
     </div>
 
+    <a href="#menu" class="hero-scroll"><span></span>Scroll to explore</a>
 </section>
-
 
 <!-- ========== MENU SECTION ========== -->
-<section
-    class="container menu-section"
-    id="menu">
-
-    <div class="section-head">
-
-        <h2>
-            Our <span>Menu</span>
-        </h2>
-
-        <p>
-            Select a category, then choose your preferred size/weight
-        </p>
-
+<section class="container menu-section" id="menu">
+    <div class="section-head reveal">
+        <span class="section-eyebrow">
+            <span class="eyebrow-line"></span>
+            Fresh From The Tandoor
+            <span class="eyebrow-line"></span>
+        </span>
+        <h2>Our <em>Signature</em> Menu</h2>
+        <p>Handcrafted dishes, cooked fresh. Pick a category, choose your size.</p>
     </div>
 
-
-    <!-- Category filters -->
-    <div
-        class="filter-tabs"
-        id="filterTabs">
-
-        <button
-            class="filter-btn active"
-            data-cat="all">
-
-            All
-
-        </button>
-
-        <button
-            class="filter-btn"
-            data-cat="karahi">
-
-            Karahi
-
-        </button>
-
-        <button
-            class="filter-btn"
-            data-cat="rice">
-
-            Rice
-
-        </button>
-
-        <button
-            class="filter-btn"
-            data-cat="bbq">
-
-            BBQ
-
-        </button>
-
-        <button
-            class="filter-btn"
-            data-cat="handi">
-
-            Handi
-
-        </button>
-
-        <button
-            class="filter-btn"
-            data-cat="naan">
-
-            Naan / Drinks / Salad
-
-        </button>
-
+    <div class="menu-toolbar reveal">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="menuSearch" placeholder="Search for karahi, biryani, naan…" autocomplete="off" aria-label="Search menu" />
+            <button class="clear-search" id="clearSearch" aria-label="Clear search"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="sort-box">
+            <i class="fas fa-sliders"></i>
+            <select id="menuSort" aria-label="Sort menu">
+                <option value="default">Recommended</option>
+                <option value="price-asc">Price: Low → High</option>
+                <option value="price-desc">Price: High → Low</option>
+                <option value="name">Name: A → Z</option>
+            </select>
+        </div>
     </div>
 
-
-    <div
-        class="menu-grid"
-        id="menuGrid">
+    <div class="filter-tabs reveal" id="filterTabs">
+        <button class="filter-btn active" data-cat="all">All</button>
+        <button class="filter-btn" data-cat="karahi">Karahi</button>
+        <button class="filter-btn" data-cat="rice">Rice</button>
+        <button class="filter-btn" data-cat="bbq">BBQ</button>
+        <button class="filter-btn" data-cat="handi">Handi</button>
+        <button class="filter-btn" data-cat="naan">Naan / Drinks / Salad</button>
     </div>
 
+    <div class="results-info" id="resultsInfo"></div>
+    <div class="menu-grid" id="menuGrid"></div>
+
+    <div class="no-results" id="noResults" hidden>
+        <div class="no-results-icon"><i class="fas fa-magnifying-glass"></i></div>
+        <h3>Nothing matched your search</h3>
+        <p>Try a different keyword or browse another category.</p>
+        <button class="btn-secondary" id="resetFilters">Reset Filters</button>
+    </div>
 </section>
 
-
-<!-- ========== PROFESSIONAL ABOUT / BIO SECTION ========== -->
-<section
-    class="about-pro"
-    id="about">
+<!-- ========== ABOUT SECTION ========== -->
+<section class="about-pro" id="about">
+    <div class="about-deco-1"></div>
+    <div class="about-deco-2"></div>
 
     <div class="container about-pro-container">
-
-        <!-- Left: Image -->
-        <div class="about-pro-image">
-
+        <div class="about-pro-image reveal">
             <div class="about-image-frame">
-
-                <img
-                    src="https://searedandsmoked.com/wp-content/uploads/2025/02/bbq-smoked-ribs-recipe36-scaled.jpg"
-                    alt="Authentic Pakistani food at Dastarkhwan 804 Rawalpindi"
-                />
-
+                <img src="https://searedandsmoked.com/wp-content/uploads/2025/02/bbq-smoked-ribs-recipe36-scaled.jpg" alt="Authentic Pakistani food at Dastarkhwan 804 Rawalpindi" />
+                <div class="about-image-overlay"></div>
             </div>
-
+            <div class="about-image-secondary">
+                <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=400&fit=crop" alt="Fresh Pakistani spices" />
+            </div>
             <div class="about-experience-card">
-
-                <span class="about-number">
-                    804
-                </span>
-
-                <span class="about-small-text">
-                    Dastarkhwan
-                </span>
-
+                <span class="about-number">804</span>
+                <span class="about-small-text">Dastarkhwan</span>
+                <span class="about-divider"></span>
+                <span class="about-tag">Est. Rawalpindi</span>
             </div>
-
         </div>
 
-
-        <!-- Right: Content -->
-        <div class="about-pro-content">
-
-            <span class="about-pro-label">
-
-                <i class="fas fa-utensils"></i>
-
-                About Dastarkhwan 804
-
-            </span>
-
-            <h2>
-
-                Authentic Pakistani Taste,
-
-                <span>
-                    Made With Tradition.
-                </span>
-
-            </h2>
-
+        <div class="about-pro-content reveal">
+            <span class="about-pro-label"><span class="label-dot"></span>About Dastarkhwan 804</span>
+            <h2>Where Every Meal Feels <em>Like Home.</em></h2>
             <p class="about-pro-intro">
-
-                Welcome to <strong>Dastarkhwan 804</strong>, a Pakistani restaurant
+                Welcome to <strong>Dastarkhwan 804</strong> — a Pakistani restaurant
                 on Main Khanna Road, Rawalpindi, where traditional flavours,
                 fresh ingredients and generous portions come together.
-
             </p>
-
             <p>
-
                 From sizzling <strong>karahi</strong> and smoky BBQ to flavorful
                 handi, aromatic biryani, fresh naan and classic desi dishes,
                 every meal is prepared to deliver the authentic taste of
                 Pakistani cuisine.
-
             </p>
-
 
             <div class="about-features">
-
                 <div class="about-feature">
-
-                    <div class="feature-icon">
-
-                        <i class="fas fa-fire"></i>
-
-                    </div>
-
-                    <div>
-
-                        <h4>
-                            Freshly Cooked
-                        </h4>
-
-                        <p>
-                            Prepared fresh for every order.
-                        </p>
-
-                    </div>
-
+                    <div class="feature-icon"><i class="fas fa-fire"></i></div>
+                    <div><h4>Freshly Cooked</h4><p>Prepared fresh for every order.</p></div>
                 </div>
-
-
                 <div class="about-feature">
-
-                    <div class="feature-icon">
-
-                        <i class="fas fa-bowl-food"></i>
-
-                    </div>
-
-                    <div>
-
-                        <h4>
-                            Authentic Flavours
-                        </h4>
-
-                        <p>
-                            Traditional Pakistani recipes and taste.
-                        </p>
-
-                    </div>
-
+                    <div class="feature-icon"><i class="fas fa-bowl-food"></i></div>
+                    <div><h4>Authentic Flavours</h4><p>Traditional Pakistani recipes.</p></div>
                 </div>
-
-
                 <div class="about-feature">
-
-                    <div class="feature-icon">
-
-                        <i class="fas fa-heart"></i>
-
-                    </div>
-
-                    <div>
-
-                        <h4>
-                            Made With Care
-                        </h4>
-
-                        <p>
-                            Quality food made for family and friends.
-                        </p>
-
-                    </div>
-
+                    <div class="feature-icon"><i class="fas fa-heart"></i></div>
+                    <div><h4>Made With Care</h4><p>Quality food for family & friends.</p></div>
                 </div>
-
-
                 <div class="about-feature">
-
-                    <div class="feature-icon">
-
-                        <i class="fas fa-motorcycle"></i>
-
-                    </div>
-
-                    <div>
-
-                        <h4>
-                            Delivery Available
-                        </h4>
-
-                        <p>
-                            Enjoy your favourite food at home.
-                        </p>
-
-                    </div>
-
+                    <div class="feature-icon"><i class="fas fa-motorcycle"></i></div>
+                    <div><h4>Delivery Available</h4><p>Enjoy your favourites at home.</p></div>
                 </div>
-
             </div>
-
 
             <div class="about-pro-bottom">
-
                 <div class="about-location">
-
-                    <i class="fas fa-location-dot"></i>
-
-                    <div>
-
-                        <strong>
-                            Visit Us
-                        </strong>
-
-                        <span>
-                            Main Khanna Road, Rawalpindi
-                        </span>
-
-                    </div>
-
+                    <div class="loc-icon"><i class="fas fa-location-dot"></i></div>
+                    <div><strong>Visit Us</strong><span>Main Khanna Road, Rawalpindi</span></div>
                 </div>
-
-
-                <a
-                    href="#menu"
-                    class="about-menu-btn">
-
-                    Explore Our Menu
-
+                <a href="#menu" class="about-menu-btn">
+                    <span>Explore Our Menu</span>
                     <i class="fas fa-arrow-right"></i>
-
                 </a>
-
             </div>
-
         </div>
-
     </div>
-
 </section>
 
-
-<!-- ========== PROFESSIONAL FOOTER ========== -->
-<!-- Contact navigation now points to this footer -->
-<footer
-    class="site-footer"
-    id="contact">
-
+<!-- ========== FOOTER ========== -->
+<footer class="site-footer" id="contact">
     <div class="container">
+        <div class="footer-top-mark">
+            <span class="footer-mark-line"></span>
+            <span class="footer-mark-icon"><i class="fas fa-utensil-spoon"></i></span>
+            <span class="footer-mark-line"></span>
+        </div>
 
-        <!-- Main Footer Grid -->
         <div class="footer-grid">
-
-            <!-- Column 1: Brand -->
             <div class="footer-col brand-col">
-
                 <div class="footer-logo">
-
                     <i class="fas fa-utensil-spoon"></i>
-
                     Dastarkhwan <span>804</span>
-
                 </div>
-
                 <p class="footer-about">
-
                     Authentic Pakistani flavours, cooked fresh with love.
-                    From sizzling karahis to smoky BBQs – taste the tradition.
-
+                    From sizzling karahis to smoky BBQs — taste the tradition
+                    on Main Khanna Road, Rawalpindi.
                 </p>
-
-
                 <div class="footer-social">
-
-                    <a
-                        href="https://www.facebook.com/share/1EvB4RDP4f/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Facebook">
-
-                        <i class="fab fa-facebook-f"></i>
-
-                    </a>
-
-
-                    <a
-                        href="https://www.instagram.com/hammadahmad_463?igsi=MXJ6cHp1c2xhbjlreg=="
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Instagram">
-
-                        <i class="fab fa-instagram"></i>
-
-                    </a>
-
-
-                    <a
-                        href="https://youtube.com/@hammadahmad15?si=kOcVZqnWJ_8tw9rh"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="YouTube">
-
-                        <i class="fab fa-youtube"></i>
-
-                    </a>
-
-
-                    <a
-                        href="https://www.tiktok.com/@hammad_ahmad66?_r=1&_t=ZS-99EEuv83viq"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="TikTok">
-
-                        <i class="fab fa-tiktok"></i>
-
-                    </a>
-
-
-                    <a
-                        href="https://wa.me/923199608782"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="WhatsApp">
-
-                        <i class="fab fa-whatsapp"></i>
-
-                    </a>
-
+                    <a href="https://www.facebook.com/share/1EvB4RDP4f/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/hammadahmad_463?igsi=MXJ6cHp1c2xhbjlreg==" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://youtube.com/@hammadahmad15?si=kOcVZqnWJ_8tw9rh" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.tiktok.com/@hammad_ahmad66?_r=1&_t=ZS-99EEuv83viq" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://wa.me/923199608782" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                 </div>
-
             </div>
 
-
-            <!-- Column 2: Quick Links -->
             <div class="footer-col">
-
-                <h4 class="footer-heading">
-                    Quick Links
-                </h4>
-
+                <h4 class="footer-heading">Explore</h4>
                 <ul class="footer-links">
-
-                    <li>
-
-                        <a href="#menu">
-
-                            <i class="fas fa-chevron-right"></i>
-
-                            Our Menu
-
-                        </a>
-
-                    </li>
-
-
-                    <li>
-
-                        <a href="#about">
-
-                            <i class="fas fa-chevron-right"></i>
-
-                            About Us
-
-                        </a>
-
-                    </li>
-
-
-                    <li>
-
-                        <a href="#contact">
-
-                            <i class="fas fa-chevron-right"></i>
-
-                            Contact
-
-                        </a>
-
-                    </li>
-
+                    <li><a href="#menu"><i class="fas fa-chevron-right"></i> Our Menu</a></li>
+                    <li><a href="#about"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                    <li><a href="#contact"><i class="fas fa-chevron-right"></i> Contact</a></li>
                 </ul>
-
             </div>
 
-
-            <!-- Column 3: Contact Info -->
             <div class="footer-col">
-
-                <h4 class="footer-heading">
-                    Get in Touch
-                </h4>
-
+                <h4 class="footer-heading">Get In Touch</h4>
                 <ul class="footer-contact">
-
-                    <li>
-
-                        <i class="fas fa-map-marker-alt"></i>
-
-                        <span>
-
-                            Main Khanna Road,<br />
-                            Rawalpindi, Pakistan
-
-                        </span>
-
-                    </li>
-
-
-                    <li>
-
-                        <i class="fas fa-phone-alt"></i>
-
-                        <span>
-
-                            <a href="tel:+923359635567">
-
-                                +92 335 9635567
-
-                            </a>
-
-                        </span>
-
-                    </li>
-
-
-                    <li>
-
-                        <i class="fab fa-whatsapp"></i>
-
-                        <span>
-
-                            <a
-                                href="https://wa.me/923199608782"
-                                target="_blank"
-                                rel="noopener noreferrer">
-
-                                WhatsApp Us
-
-                            </a>
-
-                        </span>
-
-                    </li>
-
-
-                    <li>
-
-                        <i class="fas fa-envelope"></i>
-
-                        <span>
-
-                            <a
-                                href="mailto:info@dastarkhwan804.com">
-
-                                info@dastarkhwan804.com
-
-                            </a>
-
-                        </span>
-
-                    </li>
-
+                    <li><span class="contact-icon"><i class="fas fa-map-marker-alt"></i></span><span>Main Khanna Road,<br />Rawalpindi, Pakistan</span></li>
+                    <li><span class="contact-icon"><i class="fas fa-phone-alt"></i></span><span><a href="tel:+923359635567">+92 335 9635567</a></span></li>
+                    <li><span class="contact-icon"><i class="fab fa-whatsapp"></i></span><span><a href="https://wa.me/923199608782" target="_blank" rel="noopener noreferrer">WhatsApp Us</a></span></li>
+                    <li><span class="contact-icon"><i class="fas fa-envelope"></i></span><span><a href="mailto:info@dastarkhwan804.com">info@dastarkhwan804.com</a></span></li>
                 </ul>
-
             </div>
 
-
-            <!-- Column 4: Opening Hours + Newsletter -->
             <div class="footer-col">
-
-                <h4 class="footer-heading">
-                    Opening Hours
-                </h4>
-
+                <h4 class="footer-heading">Opening Hours</h4>
                 <ul class="footer-hours">
-
-                    <li>
-
-                        <span>
-                            Mon – Thu
-                        </span>
-
-                        <span>
-                            11:00 AM – 12:00 AM
-                        </span>
-
-                    </li>
-
-
-                    <li>
-
-                        <span>
-                            Fri – Sun
-                        </span>
-
-                        <span>
-                            11:00 AM – 3:00 AM
-                        </span>
-
-                    </li>
-
-
-                    <li>
-
-                        <span>
-                            Delivery
-                        </span>
-
-                        <span>
-                            🟢 Always Open
-                        </span>
-
-                    </li>
-
+                    <li><span>Mon – Thu</span><span>11:00 AM – 12:00 AM</span></li>
+                    <li><span>Fri – Sun</span><span>11:00 AM – 3:00 AM</span></li>
+                    <li class="hours-open"><span>Delivery</span><span><span class="dot-live"></span> Always Open</span></li>
                 </ul>
-
-
-                <div class="footer-newsletter">
-
-                    <h4
-                        class="footer-heading"
-                        style="margin-top:20px;">
-
-                        Get 10% Off
-
-                    </h4>
-
-                    <p
-                        style="font-size:0.85rem; color:#a08c7a; margin-bottom:8px;">
-
-                        Subscribe for exclusive deals &amp; updates.
-
-                    </p>
-
-
-                    <form
-                        class="newsletter-form"
-                        id="newsletterForm">
-
-                        <input
-                            type="email"
-                            placeholder="Your email address"
-                            required />
-
-                        <button type="submit">
-
-                            <i class="fas fa-paper-plane"></i>
-
-                        </button>
-
-                    </form>
-
+                <div class="footer-payment">
+                    <span>We Accept</span>
+                    <div class="payment-icons">
+                        <i class="fas fa-money-bill-wave" title="Cash"></i>
+                        <i class="fas fa-credit-card" title="Card"></i>
+                        <i class="fas fa-mobile-screen-button" title="Easypaisa / JazzCash"></i>
+                    </div>
                 </div>
-
             </div>
-
         </div>
 
-
-        <!-- Footer Bottom Bar -->
         <div class="footer-bottom">
-
             <div class="footer-copyright">
-
-                &copy; 2026
-
-                <strong>
-                    Dastarkhwan 804
-                </strong>.
-
-                All rights reserved.
-
-                <span class="footer-sep">
-                    |
-                </span>
-
-                Made with
-
-                <i
-                    class="fas fa-heart"
-                    style="color:#b22222;">
-                </i>
-
-                in Pakistan.
-
+                &copy; 2026 <strong>Dastarkhwan 804</strong>. All rights reserved.
             </div>
-
+            <div class="footer-made">Made with <i class="fas fa-heart"></i> in Pakistan</div>
+            <a href="#hero" class="footer-top-link">Back to top <i class="fas fa-arrow-up"></i></a>
         </div>
-
     </div>
-
 </footer>
 
-
-<!-- ========== BACK TO TOP BUTTON ========== -->
-<button
-    class="back-to-top"
-    id="backToTop"
-    aria-label="Back to top">
-
+<button class="back-to-top" id="backToTop" aria-label="Back to top">
     <i class="fas fa-arrow-up"></i>
-
 </button>
 
-
 <!-- ========== CART SIDEBAR ========== -->
-<div
-    class="cart-sidebar"
-    id="cartSidebar">
-
+<div class="cart-sidebar" id="cartSidebar">
     <div class="cart-header">
-
-        <h3>
-
-            <i class="fas fa-shopping-bag"></i>
-
-            Your Order
-
-        </h3>
-
-        <button
-            class="cart-close"
-            id="cartClose"
-            aria-label="Close cart">
-
-            <i class="fas fa-times"></i>
-
-        </button>
-
+        <h3><i class="fas fa-shopping-bag"></i> Your Order</h3>
+        <button class="cart-close" id="cartClose" aria-label="Close cart"><i class="fas fa-times"></i></button>
     </div>
-
-
-    <div
-        class="cart-body"
-        id="cartBody">
-
-        <p class="empty-cart">
-
-            Your cart is empty.
-
-        </p>
-
+    <div class="cart-body" id="cartBody">
+        <p class="empty-cart">Your cart is empty.</p>
     </div>
-
-
     <div class="cart-footer">
-
-        <div
-            class="cart-total"
-            id="cartTotal">
-
-            Total: Rs. 0
-
-        </div>
-
-
-        <button
-            class="btn-primary"
-            id="checkoutBtn"
-            style="width:100%; justify-content:center; display:flex; gap:10px;">
-
-            <i class="fas fa-check"></i>
-
-            Checkout
-
+        <div class="cart-total" id="cartTotal">Total: Rs. 0</div>
+        <button class="btn-primary" id="checkoutBtn" style="width:100%; justify-content:center; display:flex; gap:10px;">
+            <i class="fas fa-check"></i> Checkout
         </button>
-
     </div>
-
 </div>
 
-
-<!-- ========== VARIANT SELECTION MODAL ========== -->
-<div
-    class="modal-overlay"
-    id="variantModal">
-
-    <div
-        class="modal"
-        style="max-width:600px;">
-
+<!-- ========== VARIANT MODAL ========== -->
+<div class="modal-overlay" id="variantModal">
+    <div class="modal variant-modal">
         <div class="modal-header">
-
-            <h2 id="variantItemName">
-
-                <i class="fas fa-utensils"></i>
-
-                Item Name
-
-            </h2>
-
-
-            <button
-                class="modal-close"
-                id="variantModalClose"
-                aria-label="Close">
-
-                <i class="fas fa-times"></i>
-
-            </button>
-
+            <h2 id="variantItemName"><i class="fas fa-utensils"></i> Item Name</h2>
+            <button class="modal-close" id="variantModalClose" aria-label="Close"><i class="fas fa-times"></i></button>
         </div>
-
-
         <div class="modal-body">
-
-            <div
-                style="display:flex; gap:16px; align-items:center; margin-bottom:16px;">
-
-                <img
-                    id="variantItemImg"
-                    src=""
-                    alt=""
-                    style="width:80px; height:80px; object-fit:cover; border-radius:16px; background:#f0ebe3;" />
-
-                <div>
-
-                    <p
-                        id="variantItemDesc"
-                        style="color:#4a4a4a;">
-
-                        Description
-
-                    </p>
-
+            <div class="variant-hero">
+                <img id="variantItemImg" src="" alt="" />
+                <div class="variant-hero-text">
+                    <p id="variantItemDesc">Description</p>
+                    <div class="variant-tags" id="variantTags"></div>
                 </div>
-
             </div>
-
-
-            <p
-                style="font-weight:600; margin-bottom:8px;">
-
-                Choose your size/weight:
-
-            </p>
-
-
-            <div
-                class="variant-grid"
-                id="variantGrid">
-
-                <!-- Buttons will be injected here -->
-
+            <p class="variant-label">Choose your size/weight:</p>
+            <div class="variant-grid" id="variantGrid"></div>
+            <div class="variant-qty-row">
+                <span class="variant-qty-label"><i class="fas fa-layer-group"></i> Quantity</span>
+                <div class="qty-stepper">
+                    <button type="button" id="vQtyMinus" aria-label="Decrease quantity">−</button>
+                    <span id="vQtyValue">1</span>
+                    <button type="button" id="vQtyPlus" aria-label="Increase quantity">+</button>
+                </div>
             </div>
-
         </div>
-
-
-        <div class="modal-footer">
-
-            <button
-                class="btn-secondary"
-                id="variantCancel">
-
-                Cancel
-
+        <div class="modal-footer variant-footer">
+            <button class="btn-secondary" id="variantCancel">Cancel</button>
+            <button class="btn-primary" id="variantAddBtn" disabled>
+                <i class="fas fa-cart-plus"></i> <span>Select a size</span>
             </button>
-
         </div>
-
     </div>
-
 </div>
-
 
 <!-- ========== CHECKOUT MODAL ========== -->
-<div
-    class="modal-overlay"
-    id="checkoutModal">
-
-    <div
-        class="modal"
-        style="max-width:700px;">
-
+<div class="modal-overlay" id="checkoutModal">
+    <div class="modal checkout-modal">
         <div class="modal-header">
-
-            <h2>
-
-                <i class="fas fa-clipboard-list"></i>
-
-                Review Your Order
-
-            </h2>
-
-
-            <button
-                class="modal-close"
-                id="checkoutModalClose"
-                aria-label="Close">
-
-                <i class="fas fa-times"></i>
-
-            </button>
-
+            <h2><i class="fas fa-clipboard-list"></i> Review Your Order</h2>
+            <button class="modal-close" id="checkoutModalClose" aria-label="Close"><i class="fas fa-times"></i></button>
         </div>
-
-
         <div class="modal-body">
 
-            <div
-                class="checkout-items"
-                id="checkoutItems">
+            <div class="field-block">
+                <label class="field-label"><i class="fas fa-bag-shopping"></i> Order Type</label>
+                <div class="order-type-toggle" id="orderTypeToggle">
+                    <button type="button" class="active" data-type="delivery"><i class="fas fa-motorcycle"></i> Delivery</button>
+                    <button type="button" data-type="pickup"><i class="fas fa-store"></i> Pickup</button>
+                    <button type="button" data-type="dinein"><i class="fas fa-chair"></i> Dine‑in</button>
+                </div>
             </div>
 
+            <div class="checkout-items" id="checkoutItems"></div>
+
+            <div class="free-delivery">
+                <div class="free-delivery-track">
+                    <div class="free-delivery-bar" id="freeDeliveryBar"></div>
+                </div>
+                <p class="free-delivery-text" id="freeDeliveryText"></p>
+            </div>
 
             <div class="checkout-summary">
-
-                <div class="checkout-row">
-
-                    <span>
-                        Subtotal
-                    </span>
-
-                    <span id="checkoutSubtotal">
-                        Rs. 0
-                    </span>
-
-                </div>
-
-
-                <div class="checkout-row">
-
-                    <span>
-                        Delivery
-                    </span>
-
-                    <span>
-                        Rs. 50
-                    </span>
-
-                </div>
-
-
-                <div class="checkout-row total">
-
-                    <span>
-                        Grand Total
-                    </span>
-
-                    <span id="checkoutTotal">
-                        Rs. 0
-                    </span>
-
-                </div>
-
+                <div class="checkout-row"><span>Subtotal</span><span id="checkoutSubtotal">Rs. 0</span></div>
+                <div class="checkout-row"><span>Delivery</span><span id="deliveryFeeVal">Rs. 50</span></div>
+                <div class="checkout-row total"><span>Grand Total</span><span id="checkoutTotal">Rs. 0</span></div>
             </div>
-
 
             <hr />
 
-
-            <div class="form-group">
-
-                <label>
-                    Delivery Time
-                </label>
-
-                <input
-                    type="datetime-local"
-                    id="deliveryTime" />
-
+            <div class="field-block">
+                <label class="field-label"><i class="fas fa-wallet"></i> Payment Method</label>
+                <div class="payment-methods" id="paymentMethods">
+                    <button type="button" class="active" data-pay="cod"><i class="fas fa-money-bill-wave"></i> Cash on Delivery</button>
+                    <button type="button" data-pay="card"><i class="fas fa-credit-card"></i> Card on Delivery</button>
+                    <button type="button" data-pay="wallet"><i class="fas fa-mobile-screen"></i> JazzCash / EasyPaisa</button>
+                </div>
             </div>
 
-
-            <div class="form-group">
-
-                <label>
-                    Special Requests
-                </label>
-
-                <textarea
-                    id="orderNote"
-                    rows="2"
-                    placeholder="Extra sauce, call before delivery, etc."></textarea>
-
+            <div class="form-group" id="deliveryTimeGroup">
+                <label id="deliveryTimeLabel">Delivery Time</label>
+                <input type="datetime-local" id="deliveryTime" />
             </div>
 
-
             <div class="form-group">
-
-                <label>
-
-                    Your Name
-
-                    <span class="required">
-                        *
-                    </span>
-
-                </label>
-
-                <input
-                    type="text"
-                    id="custName"
-                    placeholder="Full name" />
-
+                <label>Special Requests</label>
+                <div class="note-chips" id="noteChips">
+                    <button type="button" class="note-chip" data-note="Extra spicy">🌶️ Extra spicy</button>
+                    <button type="button" class="note-chip" data-note="Less spicy">🍃 Less spicy</button>
+                    <button type="button" class="note-chip" data-note="No onions">🧅 No onions</button>
+                    <button type="button" class="note-chip" data-note="Extra raita">🥛 Extra raita</button>
+                    <button type="button" class="note-chip" data-note="Extra salad">🥗 Extra salad</button>
+                    <button type="button" class="note-chip" data-note="Less oil">💧 Less oil</button>
+                    <button type="button" class="note-chip" data-note="Call before delivery">📞 Call before delivery</button>
+                </div>
+                <textarea id="orderNote" rows="3" placeholder="Anything else? (optional)"></textarea>
             </div>
 
-
             <div class="form-group">
-
-                <label>
-
-                    Phone Number
-
-                    <span class="required">
-                        *
-                    </span>
-
-                </label>
-
-                <input
-                    type="tel"
-                    id="custPhone"
-                    placeholder="03199608782" />
-
+                <label>Your Name <span class="required">*</span></label>
+                <input type="text" id="custName" placeholder="Full name" />
             </div>
 
-
             <div class="form-group">
+                <label>Phone Number <span class="required">*</span></label>
+                <input type="tel" id="custPhone" placeholder="03199608782" />
+            </div>
 
-                <label>
-
-                    Delivery Address
-
-                    <span class="required">
-                        *
-                    </span>
-
-                </label>
-
-                <textarea
-                    id="custAddress"
-                    rows="2"
-                    placeholder="Street, sector, city"></textarea>
-
+            <div class="form-group" id="custAddressGroup">
+                <label id="custAddressLabel">Delivery Address <span class="required">*</span></label>
+                <textarea id="custAddress" rows="2" placeholder="Street, sector, city"></textarea>
             </div>
 
         </div>
-
-
         <div class="modal-footer">
-
-            <button
-                class="btn-primary"
-                id="placeOrderBtn"
-                style="width:100%; justify-content:center; display:flex; gap:10px;">
-
-                <i class="fas fa-check"></i>
-
-                Place Order
-
+            <button class="btn-primary" id="placeOrderBtn" style="width:100%; justify-content:center; display:flex; gap:10px;">
+                <i class="fas fa-check"></i> Place Order
             </button>
-
         </div>
-
     </div>
-
 </div>
 
+<!-- ========== SUCCESS MODAL ========== -->
+<div class="modal-overlay" id="successModal">
+    <div class="modal success-modal">
+        <div class="success-icon"><i class="fas fa-check"></i></div>
+        <h2>Order Confirmed!</h2>
+        <p>Thank you, <strong id="successName">friend</strong>! Your order has been placed successfully.</p>
+
+        <div class="success-order-id">
+            Order ID: <strong id="successOrderId">#DK804-0000</strong>
+        </div>
+
+        <button class="btn-whatsapp-confirm" id="whatsappConfirmBtn">
+            <i class="fab fa-whatsapp"></i>
+            Send Order to Restaurant on WhatsApp
+        </button>
+
+        <p class="success-note">
+            We'll call you shortly to confirm.
+            Estimated time: <strong id="successEta">30–40 min</strong>
+        </p>
+
+        <button class="btn-primary" id="successClose" style="width:100%; justify-content:center; display:flex; gap:10px;">
+            <i class="fas fa-utensils"></i> Continue Browsing
+        </button>
+    </div>
+</div>
+
+<!-- ========== TRACK ORDER MODAL (Feature 18) ========== -->
+<div class="modal-overlay" id="trackModal">
+    <div class="modal track-modal">
+        <div class="modal-header">
+            <h2><i class="fas fa-truck-fast"></i> Track Your Order</h2>
+            <button class="modal-close" id="trackModalClose" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <p class="track-intro">Enter your Order ID to check the current status.</p>
+
+            <div class="track-input-row">
+                <input type="text" id="trackInput" placeholder="e.g. DK804-123456" autocomplete="off" />
+                <button class="btn-primary" id="trackSearchBtn"><i class="fas fa-search"></i></button>
+            </div>
+
+            <p class="track-msg" id="trackMsg"></p>
+
+            <div class="track-result" id="trackResult" hidden>
+                <div class="track-result-head">
+                    <span>Order</span>
+                    <strong id="trackResultId">DK804-XXXXXX</strong>
+                </div>
+                <div class="track-result-status" id="trackResultStatus">Preparing</div>
+
+                <!-- Feature 18: Live rider location block -->
+                <div class="live-rider-map" id="liveRiderMap" hidden>
+                    <div class="live-rider-header">
+                        <i class="fas fa-satellite-dish"></i>
+                        <span>Live Rider Location</span>
+                        <span class="live-dot"></span>
+                    </div>
+                    <div class="live-rider-info" id="liveRiderInfo">Waiting for rider location...</div>
+                    <a class="live-rider-link" id="liveRiderLink" href="#" target="_blank" rel="noopener noreferrer">
+                        <i class="fas fa-map-marked-alt"></i> Open in Google Maps
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- ========== TOAST ========== -->
-<div
-    id="toast"
-    class="toast">
-
-    <i
-        class="fas fa-check-circle"
-        style="color:#2e7d32;">
-    </i>
-
-    <span id="toastMsg">
-        Added to cart!
-    </span>
-
+<div id="toast" class="toast">
+    <i class="fas fa-check-circle" id="toastIcon"></i>
+    <span id="toastMsg">Added to cart!</span>
 </div>
 
-
-<!-- JavaScript -->
-<script
-    type="module"
-    src="script.js">
-</script>
+<script type="module" src="script.js"></script>
 
 </body>
 </html>
