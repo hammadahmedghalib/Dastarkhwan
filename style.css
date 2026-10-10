@@ -2792,3 +2792,58 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 18px 0; }
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(79, 156, 107, .15);
 }
+
+
+/* FORCE: Show 2 order cards side-by-side */
+#ordersContainer,
+.orders-container,
+#ordersList,
+.orders-list,
+.order-list {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+    align-items: start !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+}
+
+/* Prevent each order card from taking the full row */
+.order-card,
+.order-item,
+.order,
+[class*="order-card"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Reduce unnecessary space inside order cards */
+.order-card,
+.order-item,
+.order {
+    padding: 14px !important;
+}
+
+/* Make the order details fit the smaller card */
+.order-card button,
+.order-item button,
+.order button {
+    max-width: 100% !important;
+    white-space: normal !important;
+}
+
+/* Responsive: one column on mobile */
+@media (max-width: 700px) {
+    #ordersContainer,
+    .orders-container,
+    #ordersList,
+    .orders-list,
+    .order-list {
+        grid-template-columns: 1fr !important;
+    }
+}

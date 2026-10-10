@@ -13,7 +13,8 @@
     header p { color: #aaa; font-size: 13px; margin-top: 4px; }
     .refresh-btn { background: white; color: #111; border: none; padding: 10px 16px; border-radius: 7px; font-weight: bold; cursor: pointer; }
     .refresh-btn:hover { background: #ddd; }
-    .container { max-width: 1200px; margin: auto; padding: 25px; }
+    /* Use the full screen width so two orders can fit side-by-side. */
+    .container { width: 100%; max-width: none; margin: 0 auto; padding: 16px 20px; }
     .notice { background: #e3f2fd; color: #0d47a1; border: 1px solid #90caf9; padding: 14px 18px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; display: flex; gap: 10px; align-items: center; }
     .notice i { font-size: 20px; }
     .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
@@ -21,8 +22,36 @@
     .stat-card h3 { color: #777; font-size: 14px; margin-bottom: 8px; }
     .stat-card p { font-size: 28px; font-weight: bold; }
     .stat-card.live { border-top: 4px solid #198754; }
-    #ordersContainer { display: grid; gap: 18px; }
-    .order-card { background: white; border-radius: 14px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    /* Two order cards per row on desktop / laptop screens. */
+    #ordersContainer {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 16px !important;
+        align-items: start;
+        width: 100%;
+    }
+    .order-card {
+        background: white;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+    }
+    /* Empty/loading messages should span both columns. */
+    #ordersContainer > .empty,
+    #ordersContainer > .loading {
+        grid-column: 1 / -1;
+    }
+    /* Compact spacing lets more order information fit on screen. */
+    .order-top { margin-bottom: 12px; }
+    .info-grid { gap: 8px; margin-bottom: 12px; }
+    .info-box { padding: 10px; }
+    .items-section { margin-bottom: 12px; }
+    .total-box { padding-top: 12px; margin-bottom: 12px; }
+    .actions { gap: 8px; }
+    .action-btn { padding: 10px 12px; font-size: 13px; }
     .order-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; margin-bottom: 18px; }
     .order-number { font-size: 19px; font-weight: bold; }
     .order-date { color: #777; font-size: 13px; margin-top: 5px; }
@@ -63,16 +92,51 @@
     .gps-banner.active { display: flex; }
     .gps-banner i { font-size: 20px; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+    @media (max-width: 900px) {
+        #ordersContainer { grid-template-columns: 1fr !important; }
+    }
     @media (max-width: 600px) {
         header { padding: 15px; }
         header h1 { font-size: 17px; }
-        .container { padding: 15px; }
+        .container { padding: 12px; }
         .stats { grid-template-columns: 1fr; }
-        .order-top { flex-direction: column; }
+        .order-top { flex-direction: row; }
         .info-grid { grid-template-columns: 1fr; }
         .actions { flex-direction: column; }
         .action-btn { width: 100%; }
     }
+
+    /* EXTRA-COMPACT order cards: reduce vertical height while keeping details readable. */
+    .container { padding: 10px 14px !important; }
+    .notice { padding: 8px 12px !important; margin-bottom: 10px !important; font-size: 12px !important; }
+    .stats { gap: 10px !important; margin-bottom: 12px !important; }
+    .stat-card { padding: 10px 14px !important; }
+    .stat-card h3 { font-size: 12px !important; margin-bottom: 4px !important; }
+    .stat-card p { font-size: 22px !important; }
+    #ordersContainer { gap: 12px !important; }
+    .order-card { padding: 12px !important; border-radius: 10px !important; }
+    .order-top { gap: 8px !important; margin-bottom: 8px !important; }
+    .order-number { font-size: 16px !important; }
+    .order-date { font-size: 11px !important; margin-top: 3px !important; }
+    .status { padding: 5px 9px !important; font-size: 10px !important; }
+    .info-grid { gap: 6px !important; margin-bottom: 8px !important; }
+    .info-box { padding: 7px 9px !important; border-radius: 6px !important; }
+    .info-box strong { font-size: 10px !important; margin-bottom: 3px !important; }
+    .info-box span { font-size: 12px !important; }
+    .items-section { margin-bottom: 8px !important; }
+    .items-section h3 { font-size: 13px !important; margin-bottom: 6px !important; }
+    .item { padding: 7px 9px !important; margin-bottom: 4px !important; font-size: 12px !important; }
+    .item-variant { font-size: 10px !important; }
+    .info-box[style] { margin-bottom: 9px !important; }
+    .total-box { padding-top: 8px !important; margin-bottom: 9px !important; }
+    .total-box strong { font-size: 15px !important; }
+    .total-price { font-size: 17px !important; }
+    .actions { gap: 6px !important; }
+    .action-btn { padding: 8px 10px !important; font-size: 11px !important; border-radius: 6px !important; }
+    header { padding: 12px 18px !important; }
+    header h1 { font-size: 20px !important; }
+    header p { font-size: 11px !important; }
+    .refresh-btn { padding: 8px 12px !important; font-size: 12px !important; }
 </style>
 </head>
 <body>
